@@ -1,33 +1,11 @@
-import { ApiProperty } from '@nestjs/swagger';
-// import { IsEmail, IsEnum, IsOptional, IsString, IsUUID } from 'class-validator';
+import { PickType } from '@nestjs/swagger';
 
-export class UserResDto {
-  @ApiProperty({ description: 'Уникальный идентификатор пользователя' })
-  // @IsUUID()
-  id: string;
+import { UserBaseResDto } from './user-base.res.dto';
 
-  @ApiProperty({ description: 'Имя пользователя' })
-  // @IsString()
-  name: string;
-
-  @ApiProperty({
-    description: 'Электронная почта пользователя',
-    example: 'user@example.com',
-  })
-  // @IsEmail()
-  email: string;
-
-  @ApiProperty({
-    description: 'Тип аккаунта пользователя',
-    enum: ['basic', 'premium'],
-    example: 'basic',
-    default: 'basic',
-  })
-  // @IsEnum(['basic', 'premium'])
-  accountType: 'basic' | 'premium';
-
-  @ApiProperty({ description: 'Регион пользователя', required: false })
-  // @IsOptional()
-  // @IsString()
-  region?: string;
-}
+export class UserResDto extends PickType(UserBaseResDto, [
+  'id',
+  'name',
+  'email',
+  'region',
+  'accountType',
+]) {}
