@@ -21,7 +21,7 @@ export class UsersController {
 
   @Post()
   @ApiCreatedResponse({ type: UserResDto })
-  create(@Body() dto: CreateUserDto) {
+  create(@Body() dto: CreateUserDto): Promise<UserResDto> {
     return this.usersService.create(dto);
   }
 
