@@ -1,42 +1,58 @@
 import { ApiProperty } from '@nestjs/swagger';
-// import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
+import {
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { TransformHelper } from 'src/common/helpers/transform.helper';
+
+import { AccountTypeEnum } from '../../enums/account-type.enum';
 
 export class UserBaseReqDto {
   @ApiProperty({
     description: 'Имя пользователя, должно быть заполнено',
     example: 'John Doe', // Пример имени пользователя
   })
-  // @IsString()
-  // @IsNotEmpty()
+  @Transform(TransformHelper.trim) // Удаляет лишние пробелы
+  @IsString()
+  @IsNotEmpty()
   name: string;
 
   @ApiProperty({
     description: 'Уникальный адрес электронной почты пользователя',
     example: 'john.doe@example.com', // Пример электронной почты
   })
-  // @IsEmail()
+  @Transform(TransformHelper.trim) // Удаляет лишние пробелы
+  @IsEmail()
   email: string;
 
   @ApiProperty({
     description: 'Пароль пользователя, должно быть заполнено',
     example: 'P@ssw0rd', // Пример пароля
   })
-  // @IsString()
-  // @IsNotEmpty()
+  @Transform(TransformHelper.trim) // Удаляет лишние пробелы
+  @IsString()
+  @IsNotEmpty()
   password: string;
 
   @ApiProperty({
     description: 'Тип аккаунта пользователя',
-    example: 'basic',
+    default: 'basic',
     enum: ['basic', 'premium'],
   })
-  // @IsEnum(['basic', 'premium'])
-  accountType?: string;
+  @IsOptional()
+  @IsEnum(AccountTypeEnum)
+  accountType?: AccountTypeEnum;
 
   @ApiProperty({
     description: 'Регион пользователя',
     example: 'Москва', // Пример региона
   })
-  // @IsString()
+  @IsOptional()
+  @Transform(TransformHelper.trim) // Удаляет лишние пробелы
+  @IsString()
   region?: string;
 }
