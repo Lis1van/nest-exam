@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 
 import { AppModule } from './app.module';
+import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 import { AppConfig } from './configs/config.type';
 import { SwaggerSetupModule } from './documentations/swagger.module';
 
@@ -14,6 +15,8 @@ async function bootstrap() {
   const appConfig = configService.get<AppConfig>('app');
 
   SwaggerSetupModule.setupSwagger(app);
+
+  app.useGlobalFilters(new GlobalExceptionFilter());
 
   app.useGlobalPipes(
     new ValidationPipe({
