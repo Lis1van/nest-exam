@@ -1,20 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
-// import { IsEmail, IsEnum, IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsEmail, IsEnum, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class UserBaseResDto {
   @ApiProperty({ description: 'Уникальный идентификатор пользователя' })
-  // @IsUUID()
+  @IsUUID()
   id: string;
 
   @ApiProperty({ description: 'Имя пользователя' })
-  // @IsString()
+  @IsString()
   name: string;
 
   @ApiProperty({
     description: 'Электронная почта пользователя',
     example: 'user@example.com',
   })
-  // @IsEmail()
+  @IsEmail()
   email: string;
 
   @ApiProperty({
@@ -23,11 +23,11 @@ export class UserBaseResDto {
     example: 'basic',
     default: 'basic',
   })
-  // @IsEnum(['basic', 'premium'])
+  @IsEnum(['basic', 'premium'])
   accountType: 'basic' | 'premium';
 
   @ApiProperty({ description: 'Регион пользователя', required: false })
-  // @IsOptional()
-  // @IsString()
+  @IsOptional()
+  @IsString()
   region?: string;
 }
