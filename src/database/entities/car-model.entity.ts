@@ -1,3 +1,4 @@
+import { IsUUID } from 'class-validator';
 import {
   Column,
   Entity,
@@ -19,8 +20,8 @@ export class CarModel extends CreateUpdateModel {
   id: string; // Уникальный идентификатор модели автомобиля
 
   @Column({ nullable: false })
+  @IsUUID()
   brandId: string; // Идентификатор марки автомобиля
-
   @ManyToOne(() => CarBrand, (brand) => brand.models, {
     nullable: false,
     onDelete: 'CASCADE',
@@ -37,3 +38,20 @@ export class CarModel extends CreateUpdateModel {
   @OneToMany(() => AveragePrice, (averagePrice) => averagePrice.model)
   averagePrices: AveragePrice[]; // Связь со средними ценами для данной модели
 }
+
+// import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+
+// import { CarBrand } from './car-brand.entity';
+// import { TableName } from './enums/table-name.enum';
+
+// @Entity({ name: TableName.CAR_MODEL })
+// export class CarModel {
+//   @PrimaryGeneratedColumn()
+//   id: number;
+
+//   @Column({ nullable: false })
+//   name: string;
+
+//   @ManyToOne(() => CarBrand, (brand) => brand.models, { nullable: false })
+//   brand: CarBrand;
+// }

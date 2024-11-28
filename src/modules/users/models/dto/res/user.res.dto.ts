@@ -1,11 +1,18 @@
-import { PickType } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
-import { UserBaseResDto } from './user-base.res.dto';
+export class UserResDto {
+  @ApiProperty({ description: 'Идентификатор пользователя', example: '123' })
+  id: string;
 
-export class UserResDto extends PickType(UserBaseResDto, [
-  'id',
-  'name',
-  'email',
-  'region',
-  'accountType',
-]) {}
+  @ApiProperty({ description: 'Имя пользователя', example: 'John Doe' })
+  name: string;
+
+  @ApiProperty({
+    description: 'Электронная почта',
+    example: 'user@example.com',
+  })
+  email: string;
+
+  @ApiProperty({ description: 'Тип аккаунта', example: 'basic' })
+  accountType: string;
+}

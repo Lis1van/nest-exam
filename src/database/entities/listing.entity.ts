@@ -77,3 +77,47 @@ export class Listing extends CreateUpdateModel {
   })
   viewStatistics: ViewStatistic[]; // Статистика просмотров для объявления
 }
+
+// import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+
+// import { CarBrand } from './car-brand.entity';
+// import { CarModel } from './car-model.entity';
+// import { TableName } from './enums/table-name.enum';
+// import { CreateUpdateModel } from './models/create-update.model';
+// import { User } from './user.entity';
+
+// @Entity({ name: TableName.LISTING })
+// export class Listing extends CreateUpdateModel {
+//   @PrimaryGeneratedColumn()
+//   id: number;
+
+//   @Column({ type: 'decimal', nullable: false })
+//   price: number;
+
+//   @Column({ type: 'enum', enum: ['USD', 'EUR', 'UAH'], nullable: false })
+//   currency: 'USD' | 'EUR' | 'UAH';
+
+//   @Column({ name: 'original_currency', type: 'varchar', nullable: false })
+//   originalCurrency: string;
+
+//   @Column({ type: 'decimal', nullable: false })
+//   exchangeRate: number;
+
+//   @Column({ type: 'enum', enum: ['ACTIVE', 'INACTIVE'], nullable: false })
+//   status: 'ACTIVE' | 'INACTIVE';
+
+//   @Column({ name: 'edit_attempts', type: 'integer', nullable: false })
+//   editAttempts: number;
+
+//   @Column({ type: 'text', nullable: false })
+//   description: string;
+
+//   @ManyToOne(() => User, (user) => user.id, { nullable: false })
+//   user: User;
+
+//   @ManyToOne(() => CarBrand, (brand) => brand.id, { nullable: false })
+//   brand: CarBrand;
+
+//   @ManyToOne(() => CarModel, (model) => model.id, { nullable: false })
+//   model: CarModel;
+// }

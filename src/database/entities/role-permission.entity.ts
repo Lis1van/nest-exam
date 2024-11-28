@@ -25,7 +25,10 @@ export class RolePermission extends CreateUpdateModel {
 
   @Column()
   permissionId: string; // Идентификатор разрешения
-  @ManyToOne(() => Permission, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne(() => Permission, (permission) => permission.rolePermissions, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'permissionId' })
   permission: Permission; // Связь с разрешением
 }

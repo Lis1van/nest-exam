@@ -8,39 +8,55 @@ import {
   Post,
 } from '@nestjs/common';
 
-import { CreatePermissionDto } from './models/dto/req/create-permission.req.dto';
-import { UpdatePermissionDto } from './models/dto/req/update-permission.req.dto';
-import { PermissionsService } from './services/permissions.service';
+import { AssignPermissionReqDto } from './models/dto/req/assign-permission.req.dto';
+import { CreatePermissionReqDto } from './models/dto/req/create-permission.req.dto';
+import { UpdatePermissionReqDto } from './models/dto/req/update-permission.req.dto';
+import { PermissionResDto } from './models/dto/res/permission.res.dto';
+import { PermissionService } from './services/permissions.service';
 
 @Controller('permissions')
 export class PermissionsController {
-  constructor(private readonly permissionsService: PermissionsService) {}
-
-  @Post()
-  create(@Body() createPermissionDto: CreatePermissionDto) {
-    return this.permissionsService.create(createPermissionDto);
-  }
+  constructor(private readonly permissionService: PermissionService) {}
 
   @Get()
-  findAll() {
-    return this.permissionsService.findAll();
+  async getAllPermissions(): Promise<PermissionResDto[]> {
+    return await this.permissionService.getAllPermissions();
+  }
+
+  @Post()
+  async createPermission(
+    @Body() createPermissionDto: CreatePermissionReqDto,
+  ): Promise<PermissionResDto> {
+    return await this.permissionService.createPermission(createPermissionDto);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.permissionsService.findOne(+id);
+  async getPermissionById(@Param('id') id: string): Promise<PermissionResDto> {
+    return await this.permissionService.getPermissionById(id);
   }
 
   @Patch(':id')
-  update(
+  async updatePermission(
     @Param('id') id: string,
-    @Body() updatePermissionDto: UpdatePermissionDto,
-  ) {
-    return this.permissionsService.update(+id, updatePermissionDto);
+    @Body() updatePermissionDto: UpdatePermissionReqDto,
+  ): Promise<PermissionResDto> {
+    return await this.permissionService.updatePermission(
+      id,
+      updatePermissionDto,
+    );
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.permissionsService.remove(+id);
+  async deletePermission(@Param('id') id: string): Promise<void> {
+    return await this.permissionService.deletePermission(id);
+  }
+
+  @Post('assign-to-role')
+  async assignPermissionToRole(
+    @Body() assignPermissionDto: AssignPermissionReqDto,
+  ): Promise<void> {
+    return await this.permissionService.assignPermissionToRole(
+      assignPermissionDto,
+    );
   }
 }

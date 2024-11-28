@@ -37,7 +37,8 @@ import { PostgresConfig } from 'src/configs/config.type';
             ),
           ],
           synchronize: false,
-          migrationsRun: true,
+          migrationsRun: false,
+          logging: true,
         };
       },
       inject: [ConfigService],

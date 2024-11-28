@@ -21,3 +21,33 @@ export class Role extends CreateUpdateModel {
   })
   rolePermissions: RolePermission[]; // Список разрешений, связанных с этой ролью
 }
+
+// import {
+//   Column,
+//   Entity,
+//   JoinTable,
+//   ManyToMany,
+//   OneToMany,
+//   PrimaryGeneratedColumn,
+// } from 'typeorm';
+
+// import { TableName } from './enums/table-name.enum';
+// import { CreateUpdateModel } from './models/create-update.model';
+// import { Permission } from './permission.entity';
+// import { User } from './user.entity';
+
+// @Entity({ name: TableName.ROLE })
+// export class Role extends CreateUpdateModel {
+//   @PrimaryGeneratedColumn()
+//   id: number;
+
+//   @Column({ nullable: false })
+//   name: string;
+
+//   @OneToMany(() => User, (user) => user.role)
+//   users: User[];
+
+//   @ManyToMany(() => Permission, (permission) => permission.roles)
+//   @JoinTable({ name: TableName.ROLE_PERMISSION })
+//   permissions: Permission[];
+// }

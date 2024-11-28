@@ -1,27 +1,38 @@
 import { Injectable } from '@nestjs/common';
 
-import { CreateAuthDto } from '../models/dto/req/create-auth.req.dto';
-import { UpdateAuthDto } from '../models/dto/req/update-auth.req.dto';
+import { LoginReqDto } from '../models/dto/req/login.req.dto';
+import { RegisterReqDto } from '../models/dto/req/registe.req.dto';
+import { TokenPair } from '../models/interfaces/token-pair.interface';
+import { TokenService } from './token.service';
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
+  constructor(private readonly tokenService: TokenService) {}
+
+  async register(data: RegisterReqDto): Promise<TokenPair> {
+    // Регистрация пользователя
+    return this.tokenService.generateTokens({ userId: '1', email: data.email });
   }
 
-  findAll() {
-    return `This action returns all auth`;
+  async login(data: LoginReqDto): Promise<TokenPair> {
+    // Аутентификация пользователя
+    return this.tokenService.generateTokens({ userId: '1', email: data.email });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
+  async refreshToken(refreshToken: string): Promise<TokenPair> {
+    // Обновление токенов
+    return this.tokenService.generateTokens({
+      userId: '1',
+      email: 'user@example.com',
+    });
   }
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
+  async logout(refreshToken: string): Promise<void> {
+    // Логаут пользователя
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+  async getMe() {
+    // Возврат информации о текущем пользователе
+    return { userId: '1', userName: 'John Doe', email: 'user@example.com' };
   }
 }

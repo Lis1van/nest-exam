@@ -1,5 +1,4 @@
 export enum TableName {
-  AUTH = 'AUTH_ENTITY',
   AVERAGE_PRICE = 'Средняя цена',
   CAR_BRAND = 'Марка автомобиля',
   CAR_MODEL = 'Модель автомобиля',

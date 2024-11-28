@@ -32,3 +32,33 @@ export class ViewStatistic extends CreateUpdateModel {
   @Column('int', { default: 0 })
   viewsMonthly: number; // Количество просмотров за месяц, по умолчанию 0
 }
+
+// import {
+//   Column,
+//   Entity,
+//   JoinColumn,
+//   OneToOne,
+//   PrimaryGeneratedColumn,
+// } from 'typeorm';
+
+// import { TableName } from './enums/table-name.enum';
+// import { Listing } from './listing.entity';
+
+// @Entity({ name: TableName.VIEWS_STATISTIC })
+// export class ViewsStatistic {
+//   @PrimaryGeneratedColumn()
+//   id: number;
+
+//   @OneToOne(() => Listing)
+//   @JoinColumn()
+//   listing: Listing;
+
+//   @Column({ name: 'views_daily', type: 'integer', nullable: false })
+//   viewsDaily: number;
+
+//   @Column({ name: 'views_weekly', type: 'integer', nullable: false })
+//   viewsWeekly: number;
+
+//   @Column({ name: 'views_monthly', type: 'integer', nullable: false })
+//   viewsMonthly: number;
+// }

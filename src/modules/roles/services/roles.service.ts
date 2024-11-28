@@ -1,27 +1,40 @@
 import { Injectable } from '@nestjs/common';
 
-import { CreateRoleDto } from '../models/dto/req/create-role.req.dto';
-import { UpdateRoleDto } from '../models/dto/req/update-role.req.dto';
+import { CreateRoleReqDto } from '../models/dto/req/create-role.req.dto';
+import { UpdateRoleReqDto } from '../models/dto/req/update-role.req.dto';
+import { Role } from '../models/interfaces/role.interface';
 
 @Injectable()
-export class RolesService {
-  create(createRoleDto: CreateRoleDto) {
-    return 'This action adds a new role';
+export class RoleService {
+  private roles: Role[] = [];
+
+  async getAllRoles(): Promise<Role[]> {
+    return this.roles;
   }
 
-  findAll() {
-    return `This action returns all roles`;
+  async createRole(createRoleDto: CreateRoleReqDto): Promise<Role> {
+    const newRole: Role = {
+      id: String(this.roles.length + 1),
+      name: createRoleDto.name,
+      description: createRoleDto.description,
+    };
+    this.roles.push(newRole);
+    return newRole;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} role`;
+  async getRoleById(id: string): Promise<Role> {
+    return this.roles.find((role) => role.id === id);
   }
 
-  update(id: number, updateRoleDto: UpdateRoleDto) {
-    return `This action updates a #${id} role`;
+  async updateRole(id: string, updateRoleDto: UpdateRoleReqDto): Promise<Role> {
+    const role = await this.getRoleById(id);
+    if (role) {
+      Object.assign(role, updateRoleDto);
+    }
+    return role;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} role`;
+  async deleteRole(id: string): Promise<void> {
+    this.roles = this.roles.filter((role) => role.id !== id);
   }
 }

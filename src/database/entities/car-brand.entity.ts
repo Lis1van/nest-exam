@@ -25,3 +25,20 @@ export class CarBrand extends CreateUpdateModel {
   })
   averagePrices: AveragePrice[]; // Список средних цен для данной марки
 }
+
+// import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+
+// import { CarModel } from './car-model.entity';
+// import { TableName } from './enums/table-name.enum';
+
+// @Entity({ name: TableName.CAR_BRAND })
+// export class CarBrand {
+//   @PrimaryGeneratedColumn()
+//   id: number;
+
+//   @Column({ nullable: false })
+//   name: string;
+
+//   @OneToMany(() => CarModel, (model) => model.brand)
+//   models: CarModel[];
+// }

@@ -8,39 +8,39 @@ import {
   Post,
 } from '@nestjs/common';
 
-import { CreateCarModelDto } from './models/dto/req/create-car-model.req.dto';
-import { UpdateCarModelDto } from './models/dto/req/update-car-model.req.dto';
-import { CarModelsService } from './services/car-models.service';
+import { CreateCarModelReqDto } from './models/dto/req/create-car-model.req.dto';
+import { UpdateCarModelReqDto } from './models/dto/req/update-car-model.req.dto';
+import { CarModelService } from './services/car-models.service';
 
 @Controller('car-models')
-export class CarModelsController {
-  constructor(private readonly carModelsService: CarModelsService) {}
+export class CarModelController {
+  constructor(private readonly carModelService: CarModelService) {}
 
   @Post()
-  create(@Body() createCarModelDto: CreateCarModelDto) {
-    return this.carModelsService.create(createCarModelDto);
+  create(@Body() createCarModelDto: CreateCarModelReqDto) {
+    return this.carModelService.createCarModel(createCarModelDto);
   }
 
   @Get()
   findAll() {
-    return this.carModelsService.findAll();
+    return this.carModelService.findAll();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.carModelsService.findOne(+id);
+    return this.carModelService.findOne(id);
   }
 
   @Patch(':id')
   update(
     @Param('id') id: string,
-    @Body() updateCarModelDto: UpdateCarModelDto,
+    @Body() updateCarModelDto: UpdateCarModelReqDto,
   ) {
-    return this.carModelsService.update(+id, updateCarModelDto);
+    return this.carModelService.update(id, updateCarModelDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.carModelsService.remove(+id);
+    return this.carModelService.remove(id);
   }
 }

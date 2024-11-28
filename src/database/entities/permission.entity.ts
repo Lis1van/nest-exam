@@ -14,8 +14,27 @@ export class Permission extends CreateUpdateModel {
 
   @OneToMany(
     () => RolePermission,
-    (rolePermission) => rolePermission.permission,
-    { cascade: true },
+    (rolePermission: RolePermission) => rolePermission.permission,
+    {
+      cascade: true,
+    },
   )
   rolePermissions: RolePermission[]; // Список связей разрешений с ролями
 }
+
+// import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+
+// import { TableName } from './enums/table-name.enum';
+// import { Role } from './role.entity';
+
+// @Entity({ name: TableName.PERMISSION })
+// export class Permission {
+//   @PrimaryGeneratedColumn()
+//   id: number;
+
+//   @Column({ nullable: false })
+//   name: string;
+
+//   @ManyToMany(() => Role, (role) => role.permissions)
+//   roles: Role[];
+// }

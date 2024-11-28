@@ -1,5 +1,13 @@
-import { PartialType } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional, IsString } from 'class-validator';
 
-import { CreateCarModelDto } from './create-car-model.req.dto';
-
-export class UpdateCarModelDto extends PartialType(CreateCarModelDto) {}
+export class UpdateCarModelReqDto {
+  @ApiProperty({
+    description: 'Название модели',
+    example: 'Sedan',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  name?: string;
+}

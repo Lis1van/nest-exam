@@ -8,36 +8,51 @@ import {
   Post,
 } from '@nestjs/common';
 
-import { CreateListingDto } from './models/dto/req/create-listing.req.dto';
-import { UpdateListingDto } from './models/dto/req/update-listing.req.dto';
-import { ListingsService } from './services/listings.service';
+import { CreateListingReqDto } from './models/dto/req/create-listing.req.dto';
+import { MarkForReviewReqDto } from './models/dto/req/mark-for-review.req.dto';
+import { UpdateListingReqDto } from './models/dto/req/update-listing.req.dto';
+import { ListingResDto } from './models/dto/res/listing.res.dto';
+import { ListingService } from './services/listings.service';
 
 @Controller('listings')
 export class ListingsController {
-  constructor(private readonly listingsService: ListingsService) {}
-
-  @Post()
-  create(@Body() createListingDto: CreateListingDto) {
-    return this.listingsService.create(createListingDto);
-  }
+  constructor(private readonly listingService: ListingService) {}
 
   @Get()
-  findAll() {
-    return this.listingsService.findAll();
+  async getAllListings(): Promise<ListingResDto[]> {
+    return await this.listingService.getAllListings();
+  }
+
+  @Post()
+  async createListing(
+    @Body() createListingDto: CreateListingReqDto,
+  ): Promise<ListingResDto> {
+    return await this.listingService.createListing(createListingDto);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.listingsService.findOne(+id);
+  async getListingById(@Param('id') id: string): Promise<ListingResDto> {
+    return await this.listingService.getListingById(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateListingDto: UpdateListingDto) {
-    return this.listingsService.update(+id, updateListingDto);
+  async updateListing(
+    @Param('id') id: string,
+    @Body() updateListingDto: UpdateListingReqDto,
+  ): Promise<ListingResDto> {
+    return await this.listingService.updateListing(id, updateListingDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.listingsService.remove(+id);
+  async deleteListing(@Param('id') id: string): Promise<void> {
+    return await this.listingService.deleteListing(id);
+  }
+
+  @Post(':id/mark-for-review')
+  async markListingForReview(
+    @Param('id') id: string,
+    @Body() markForReviewDto: MarkForReviewReqDto,
+  ): Promise<void> {
+    return await this.listingService.markListingForReview(id, markForReviewDto);
   }
 }

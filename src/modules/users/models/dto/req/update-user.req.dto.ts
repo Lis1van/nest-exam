@@ -1,10 +1,13 @@
-import { PickType } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional, IsString } from 'class-validator';
 
-import { UserBaseReqDto } from './user-base.req.dto';
-
-export class UpdateUserDto extends PickType(UserBaseReqDto, [
-  'name',
-  'email',
-  'region',
-  'accountType',
-]) {}
+export class UpdateUserReqDto {
+  @ApiProperty({
+    description: 'Имя пользователя',
+    example: 'John Doe',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  name?: string;
+}

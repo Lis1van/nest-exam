@@ -1,27 +1,65 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CarBrand } from 'src/database/entities/car-brand.entity';
+import { Repository } from 'typeorm';
 
-import { CreateCarModelDto } from '../models/dto/req/create-car-model.req.dto';
-import { UpdateCarModelDto } from '../models/dto/req/update-car-model.req.dto';
+import { CarModel } from '../../../database/entities/car-model.entity';
+import { CreateCarModelReqDto } from '../models/dto/req/create-car-model.req.dto';
+import { UpdateCarModelReqDto } from '../models/dto/req/update-car-model.req.dto';
 
 @Injectable()
-export class CarModelsService {
-  create(createCarModelDto: CreateCarModelDto) {
-    return 'This action adds a new carModel';
+export class CarModelService {
+  constructor(
+    @InjectRepository(CarModel)
+    private readonly carModelRepository: Repository<CarModel>,
+    @InjectRepository(CarBrand)
+    private readonly brandRepository: Repository<CarBrand>,
+  ) {}
+
+  async createCarModel(dto: CreateCarModelReqDto): Promise<CarModel> {
+    const { brandId, name } = dto;
+
+    // Убедись, что проверяешь существование бренда
+    const brand = await this.brandRepository.findOne({
+      where: { id: brandId },
+    });
+    if (!brand) {
+      throw new NotFoundException('Бренд не найден');
+    }
+
+    const carModel = this.carModelRepository.create({
+      name,
+      // brandId,
+      brand,
+    });
+
+    return await this.carModelRepository.save(carModel);
   }
 
-  findAll() {
-    return `This action returns all carModels`;
+  async findAll(): Promise<CarModel[]> {
+    return await this.carModelRepository.find({ relations: ['brand'] });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} carModel`;
+  async findOne(id: string): Promise<CarModel> {
+    const carModel = await this.carModelRepository.findOne({
+      where: { id },
+      relations: ['brand'],
+    });
+    if (!carModel) throw new NotFoundException('Модель автомобиля не найдена');
+    return carModel;
   }
 
-  update(id: number, updateCarModelDto: UpdateCarModelDto) {
-    return `This action updates a #${id} carModel`;
+  async update(
+    id: string,
+    updateCarModelDto: UpdateCarModelReqDto,
+  ): Promise<CarModel> {
+    const carModel = await this.findOne(id);
+    Object.assign(carModel, updateCarModelDto);
+    return await this.carModelRepository.save(carModel);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} carModel`;
+  async remove(id: string): Promise<void> {
+    const carModel = await this.findOne(id);
+    await this.carModelRepository.remove(carModel);
   }
 }

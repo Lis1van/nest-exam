@@ -1,43 +1,38 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 
-import { CreateAuthDto } from './models/dto/req/create-auth.req.dto';
-import { UpdateAuthDto } from './models/dto/req/update-auth.req.dto';
+import { LoginReqDto } from './models/dto/req/login.req.dto';
+import { RegisterReqDto } from './models/dto/req/registe.req.dto';
+import { TokenPairResDto } from './models/dto/res/token-pair.res.dto';
 import { AuthService } from './services/auth.service';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post()
-  create(@Body() createAuthDto: CreateAuthDto) {
-    return this.authService.create(createAuthDto);
+  @Post('register')
+  async register(@Body() dto: RegisterReqDto): Promise<TokenPairResDto> {
+    return await this.authService.register(dto);
   }
 
-  @Get()
-  findAll() {
-    return this.authService.findAll();
+  @Post('login')
+  async login(@Body() dto: LoginReqDto): Promise<TokenPairResDto> {
+    return await this.authService.login(dto);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authService.findOne(+id);
+  @Post('refresh-token')
+  async refreshToken(
+    @Body('refreshToken') refreshToken: string,
+  ): Promise<TokenPairResDto> {
+    return await this.authService.refreshToken(refreshToken);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-    return this.authService.update(+id, updateAuthDto);
+  @Post('logout')
+  async logout(@Body('refreshToken') refreshToken: string): Promise<void> {
+    return await this.authService.logout(refreshToken);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.authService.remove(+id);
+  @Get('me')
+  async getMe() {
+    return await this.authService.getMe();
   }
 }

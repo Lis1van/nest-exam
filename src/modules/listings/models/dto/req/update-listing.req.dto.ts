@@ -1,5 +1,22 @@
-import { PartialType } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional, IsString } from 'class-validator';
 
-import { CreateListingDto } from './create-listing.req.dto';
+export class UpdateListingReqDto {
+  @ApiProperty({
+    description: 'Заголовок объявления',
+    example: 'Продаю автомобиль',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  title?: string;
 
-export class UpdateListingDto extends PartialType(CreateListingDto) {}
+  @ApiProperty({
+    description: 'Описание объявления',
+    example: 'Отличное состояние',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  description?: string;
+}
