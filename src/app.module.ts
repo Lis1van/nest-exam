@@ -4,7 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import configuration from './configs/configuration';
 import { SwaggerSetupModule } from './documentations/swagger.module';
 import { AuthModule } from './modules/auth/auth.module';
-import { AveragePricesModule } from './modules/average-prices/average-prices.module';
+import { AveragePriceModule } from './modules/average-prices/average-prices.module';
 import { CarBrandModule } from './modules/car-brands/car-brands.module';
 import { CarModelModule } from './modules/car-models/car-models.module';
 import { HealthModule } from './modules/health/health.module';
@@ -29,7 +29,7 @@ import { ViewsStatisticsModule } from './modules/views-statistics/views-statisti
 
     UserModule,
     AuthModule,
-    AveragePricesModule,
+    AveragePriceModule,
     CarBrandModule,
     CarModelModule,
     ListingsModule,

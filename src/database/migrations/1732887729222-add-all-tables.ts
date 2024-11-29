@@ -1,11 +1,11 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class AddAllTables1732828496045 implements MigrationInterface {
-    name = 'AddAllTables1732828496045'
+export class AddAllTables1732887729222 implements MigrationInterface {
+    name = 'AddAllTables1732887729222'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE "Модель автомобиля" ("created" TIMESTAMP NOT NULL DEFAULT now(), "updated" TIMESTAMP NOT NULL DEFAULT now(), "id" uuid NOT NULL DEFAULT uuid_generate_v4(), "brandId" uuid NOT NULL, "name" character varying(50) NOT NULL, CONSTRAINT "UQ_3a44fbe74d018c3bf3fe517587f" UNIQUE ("name"), CONSTRAINT "PK_cafe029115bdde24888be9942c5" PRIMARY KEY ("id"))`);
-        await queryRunner.query(`CREATE TABLE "Средняя цена" ("created" TIMESTAMP NOT NULL DEFAULT now(), "updated" TIMESTAMP NOT NULL DEFAULT now(), "id" uuid NOT NULL DEFAULT uuid_generate_v4(), "region" character varying(100) NOT NULL, "brandId" uuid NOT NULL, "modelId" uuid NOT NULL, "averagePrice" numeric(10,2) NOT NULL, CONSTRAINT "PK_ac9d92d254df55b8e0262e6f470" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "Средняя цена" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "region" character varying(100) NOT NULL, "brandId" uuid NOT NULL, "modelId" uuid NOT NULL, "averagePrice" numeric(10,2) NOT NULL, "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_ac9d92d254df55b8e0262e6f470" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "Марка автомобиля" ("created" TIMESTAMP NOT NULL DEFAULT now(), "updated" TIMESTAMP NOT NULL DEFAULT now(), "id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying(50) NOT NULL, CONSTRAINT "UQ_c204d0cdba4ee6f9a673cac63a1" UNIQUE ("name"), CONSTRAINT "PK_3f8cc9b09650d5d7593a4d36d01" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "Разрешение" ("created" TIMESTAMP NOT NULL DEFAULT now(), "updated" TIMESTAMP NOT NULL DEFAULT now(), "id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, CONSTRAINT "UQ_868e51401d84f98e08d24e5511a" UNIQUE ("name"), CONSTRAINT "PK_dbaba54f0ff7a33f9a9a3b1c541" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "Разрешения роли" ("created" TIMESTAMP NOT NULL DEFAULT now(), "updated" TIMESTAMP NOT NULL DEFAULT now(), "id" uuid NOT NULL DEFAULT uuid_generate_v4(), "permissionId" uuid NOT NULL, "roleId" uuid NOT NULL, CONSTRAINT "PK_214b57a98ac8bf650757a49b019" PRIMARY KEY ("id"))`);
@@ -25,7 +25,7 @@ export class AddAllTables1732828496045 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "Объявление" ADD CONSTRAINT "FK_c994b70f7ea7ec2acb769c40043" FOREIGN KEY ("userId") REFERENCES "Пользователи"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "Объявление" ADD CONSTRAINT "FK_3fc7dda8cfdd8e096a3093dbb75" FOREIGN KEY ("brandId") REFERENCES "Марка автомобиля"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "Объявление" ADD CONSTRAINT "FK_9c7616a340c27cb534e5c2c34e6" FOREIGN KEY ("modelId") REFERENCES "Модель автомобиля"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "Статистика просмотров" ADD CONSTRAINT "FK_ab21d08febf8f97a8401829bd58" FOREIGN KEY ("listingId") REFERENCES "Объявление"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "Статистика просмотров" ADD CONSTRAINT "FK_ab21d08febf8f97a8401829bd58" FOREIGN KEY ("listingId") REFERENCES "Объявление"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
