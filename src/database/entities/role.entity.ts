@@ -37,6 +37,9 @@ export class Role extends CreateUpdateModel {
   @Column({ nullable: false, unique: true })
   name: string; // Название роли (например, Покупатель, Продавец, Менеджер, Администратор)
 
+  @Column()
+  description: string;
+
   @OneToMany(() => User, (user) => user.role)
   users: User[]; // Список пользователей, связанных с этой ролью
 

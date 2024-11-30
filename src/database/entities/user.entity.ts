@@ -79,7 +79,6 @@ export class User extends CreateUpdateModel {
 
   @Column()
   roleId: string; // Идентификатор роли пользователя
-
   @ManyToOne(() => Role, (role) => role.users)
   @JoinColumn({ name: 'roleId' })
   role: Role; // Связь с ролью пользователя

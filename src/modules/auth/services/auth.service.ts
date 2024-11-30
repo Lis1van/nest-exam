@@ -224,128 +224,148 @@ export class AuthService {
     private readonly roleRepository: Repository<Role>,
   ) {}
 
-  // async register(data: RegisterReqDto): Promise<TokenPair> {
-  //   const hashedPassword = await bcrypt.hash(data.password, this.saltRounds);
-
-  //   const role = await this.roleRepository.findOne({
-  //     where: { name: data.role || 'users' },
-  //   });
-
-  //   if (!role) {
-  //     throw new Error('Указанная роль не найдена.');
-  //   }
-
-  //   const newUser = this.userRepository.create({
-  //     email: data.email,
-  //     password: hashedPassword,
-  //     role,
-  //     name: data.name,
-  //   });
-
-  //   await this.userRepository.save(newUser);
-
-  //   const tokens = this.tokenService.generateTokens({
-  //     userId: newUser.id,
-  //     email: newUser.email,
-  //     role: role.name,
-  //   });
-
-  //   await this.authCacheService.saveToken(newUser.id, tokens.refreshToken);
-
-  //   return tokens;
-  // }
   async register(data: RegisterReqDto): Promise<TokenPair> {
-    console.log('Начало регистрации', data);
+    console.log('Start registration process', data);
 
-    const hashedPassword = await bcrypt.hash(data.password, this.saltRounds);
-    console.log('Пароль успешно захэширован');
+    try {
+      const hashedPassword = await bcrypt.hash(data.password, this.saltRounds);
+      console.log('Password successfully hashed');
 
-    const role = await this.roleRepository.findOne({
-      where: { name: data.role || 'user' },
-    });
-    if (!role) {
-      console.log('Роль не найдена');
-      throw new Error('Роль не найдена');
+      const role = await this.roleRepository.findOne({
+        where: { name: data.role || 'user' },
+      });
+
+      if (!role) {
+        console.error('Role not found for:', data.role);
+        throw new Error('Role not found');
+      }
+      console.log('Role found:', role);
+
+      const newUser = this.userRepository.create({
+        email: data.email,
+        password: hashedPassword,
+        name: data.name,
+        role,
+      });
+      console.log('User created:', newUser);
+
+      await this.userRepository.save(newUser);
+      console.log('User saved to the database');
+
+      // Генерация токенов
+      const tokens = this.tokenService.generateTokens({
+        userId: newUser.id,
+        email: newUser.email,
+        role: String(newUser.role.name),
+      });
+      console.log('Tokens generated:', tokens);
+
+      // Сохранение refresh токена в Redis
+      await this.authCacheService.saveToken(newUser.id, tokens.refreshToken);
+      console.log('Tokens saved to Redis');
+
+      return tokens;
+    } catch (error) {
+      console.error('Error during registration:', error.message);
+      throw error; // rethrow the error after logging it
     }
-    console.log('Роль найдена', role);
-
-    const newUser = this.userRepository.create({
-      email: data.email,
-      password: hashedPassword,
-      role,
-    });
-    console.log('Пользователь создан', newUser);
-
-    await this.userRepository.save(newUser);
-    console.log('Пользователь сохранён в базе данных');
-
-    const tokens = this.tokenService.generateTokens({
-      userId: newUser.id,
-      email: newUser.email,
-      role: String(newUser.role.name),
-    });
-    console.log('Токены сгенерированы', tokens);
-
-    await this.authCacheService.saveToken(newUser.id, tokens.refreshToken);
-    console.log('Токены сохранены в Redis');
-
-    return tokens;
   }
 
   async login(data: LoginReqDto): Promise<TokenPair> {
-    const user = await this.userRepository.findOne({
-      where: { email: data.email },
-      relations: ['role'],
-    });
+    console.log('Start login process for email:', data.email);
 
-    if (!user) {
-      throw new Error('Неверный email или пароль.');
-    }
+    try {
+      const user = await this.userRepository.findOne({
+        where: { email: data.email },
+        relations: ['role'],
+      });
 
-    const isPasswordValid = await bcrypt.compare(data.password, user.password);
-    if (!isPasswordValid) {
-      throw new Error('Неверный email или пароль.');
-    }
+      if (!user) {
+        console.error('User not found for email:', data.email);
+        throw new Error('Invalid email or password.');
+      }
 
-    const existingRefreshToken = await this.authCacheService.getToken(user.id);
-    if (!existingRefreshToken) {
-      throw new Error(
-        'Пользователь не может войти, так как не найден refresh-токен.',
+      const isPasswordValid = await bcrypt.compare(
+        data.password,
+        user.password,
       );
+      if (!isPasswordValid) {
+        console.error('Invalid password attempt for email:', data.email);
+        throw new Error('Invalid email or password.');
+      }
+
+      // Получаем refresh token из Redis
+      const existingRefreshToken = await this.authCacheService.getToken(
+        user.id,
+      );
+
+      if (!existingRefreshToken) {
+        console.error('No refresh token found for user ID:', user.id);
+        throw new Error('User cannot login, refresh token not found.');
+      }
+
+      // Генерация новых токенов
+      const tokens = this.tokenService.generateTokens({
+        userId: user.id,
+        email: user.email,
+        role: user.role.name,
+      });
+
+      // Обновляем refresh token в Redis
+      await this.authCacheService.saveToken(user.id, tokens.refreshToken);
+      console.log('Login successful, tokens generated:', tokens);
+
+      return tokens;
+    } catch (error) {
+      console.error('Error during login:', error.message);
+      throw error; // rethrow the error after logging it
     }
-
-    const tokens = this.tokenService.generateTokens({
-      userId: user.id,
-      email: user.email,
-      role: user.role.name,
-    });
-
-    await this.authCacheService.saveToken(user.id, tokens.refreshToken);
-
-    return tokens;
   }
 
   async refreshToken(userId: string, refreshToken: string): Promise<TokenPair> {
-    const savedToken = await this.authCacheService.getToken(userId);
+    console.log('Start refreshing token for user ID:', userId);
 
-    if (savedToken !== refreshToken) {
-      throw new Error('Refresh-токен не совпадает.');
+    try {
+      const savedToken = await this.authCacheService.getToken(userId);
+
+      // Проверка на совпадение токенов
+      if (savedToken !== refreshToken) {
+        console.error('Refresh token does not match for user ID:', userId);
+        throw new Error('Refresh token mismatch.');
+      }
+
+      // Верификация refresh токена
+      const payload = this.tokenService.verifyRefreshToken(refreshToken);
+
+      if (payload.userId !== userId) {
+        console.error('Invalid refresh token for user ID:', userId);
+        throw new Error('Invalid refresh token.');
+      }
+
+      // Генерация новых токенов
+      const newTokens = this.tokenService.generateTokens(payload);
+      await this.authCacheService.saveToken(userId, newTokens.refreshToken);
+
+      console.log('Token refreshed successfully for user ID:', userId);
+      return newTokens;
+    } catch (error) {
+      console.error('Error during token refresh:', error.message);
+      throw error; // rethrow the error after logging it
     }
-
-    const payload = this.tokenService.verifyRefreshToken(refreshToken);
-
-    if (payload.userId !== userId) {
-      throw new Error('Неверный refresh-токен.');
-    }
-
-    const newTokens = this.tokenService.generateTokens(payload);
-
-    await this.authCacheService.saveToken(userId, newTokens.refreshToken);
-
-    return newTokens;
   }
 
   async logout(userId: string): Promise<void> {
-    await this.authCacheService.removeToken(userId);
+    console.log('Start logout process for user ID:', userId);
+
+    try {
+      await this.authCacheService.removeToken(userId);
+      console.log(
+        'User successfully logged out, removed token for user ID:',
+        userId,
+      );
+    } catch (error) {
+      console.error('Error during logout:', error.message);
+      throw error; // rethrow the error after logging it
+    }
   }
 }

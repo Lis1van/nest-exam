@@ -1,4 +1,4 @@
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 
@@ -35,5 +35,7 @@ async function bootstrap() {
       `Swagger is running on http://${appConfig.host}:${appConfig.port}/docs`,
     );
   });
+  const logger = new Logger('Bootstrap');
+  logger.log('Application is running on http://localhost:3000');
 }
 bootstrap();

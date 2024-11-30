@@ -1,40 +1,138 @@
-import { Injectable } from '@nestjs/common';
+// import { Injectable } from '@nestjs/common';
 
+// import { CreateRoleReqDto } from '../models/dto/req/create-role.req.dto';
+// import { UpdateRoleReqDto } from '../models/dto/req/update-role.req.dto';
+// import { Role } from '../models/interfaces/role.interface';
+
+// @Injectable()
+// export class RoleService {
+//   private roles: Role[] = [];
+
+//   async getAllRoles(): Promise<Role[]> {
+//     return this.roles;
+//   }
+
+//   async createRole(createRoleDto: CreateRoleReqDto): Promise<Role> {
+//     const newRole: Role = {
+//       id: String(this.roles.length + 1),
+//       name: createRoleDto.name,
+//       description: createRoleDto.description,
+//     };
+//     this.roles.push(newRole);
+//     return newRole;
+//   }
+
+//   async getRoleById(id: string): Promise<Role> {
+//     return this.roles.find((role) => role.id === id);
+//   }
+
+//   async updateRole(id: string, updateRoleDto: UpdateRoleReqDto): Promise<Role> {
+//     const role = await this.getRoleById(id);
+//     if (role) {
+//       Object.assign(role, updateRoleDto);
+//     }
+//     return role;
+//   }
+
+//   async deleteRole(id: string): Promise<void> {
+//     this.roles = this.roles.filter((role) => role.id !== id);
+//   }
+// }
+
+// import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+
+// import { Role } from '../../../database/entities/role.entity';
+// import { RoleRepository } from '../../repositories/services/role.repository';
+// import { CreateRoleReqDto } from '../models/dto/req/create-role.req.dto';
+// import { UpdateRoleReqDto } from '../models/dto/req/update-role.req.dto';
+
+// @Injectable()
+// export class RoleService {
+//   private readonly logger = new Logger(RoleService.name);
+//   constructor(private readonly roleRepository: RoleRepository) {}
+
+//   async getAllRoles(): Promise<Role[]> {
+//     return await this.roleRepository.findAllRoles();
+//   }
+
+//   // async createRole(createRoleDto: CreateRoleReqDto): Promise<Role> {
+//   //   // return await this.roleRepository.createRole(createRoleDto);
+//   //   try {
+//   //     return await this.roleRepository.createRole(createRoleDto);
+//   //   } catch (error) {
+//   //     throw new Error(`Failed to create role: ${error.message}`);
+//   //   }
+//   // }
+//   async createRole(createRoleDto: CreateRoleReqDto): Promise<Role> {
+//     try {
+//       this.logger.debug('RoleRepository instance:', this.roleRepository);
+//       const role = await this.roleRepository.createRole(createRoleDto);
+//       this.logger.debug('Role created:', role);
+//       return role;
+//     } catch (error) {
+//       this.logger.error('Failed to create role:', error);
+//       throw error;
+//     }
+//   }
+
+//   async getRoleById(id: string): Promise<Role> {
+//     const role = await this.roleRepository.findRoleById(id);
+//     if (!role) {
+//       throw new NotFoundException(`Role with id ${id} not found`);
+//     }
+//     return role;
+//   }
+
+//   async updateRole(id: string, updateRoleDto: UpdateRoleReqDto): Promise<Role> {
+//     return await this.roleRepository.updateRole(id, updateRoleDto);
+//   }
+
+//   async deleteRole(id: string): Promise<void> {
+//     return await this.roleRepository.deleteRole(id);
+//   }
+// }
+
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+
+import { Role } from '../../../database/entities/role.entity';
+import { RoleRepository } from '../../repositories/services/role.repository';
 import { CreateRoleReqDto } from '../models/dto/req/create-role.req.dto';
 import { UpdateRoleReqDto } from '../models/dto/req/update-role.req.dto';
-import { Role } from '../models/interfaces/role.interface';
 
 @Injectable()
 export class RoleService {
-  private roles: Role[] = [];
+  private readonly logger = new Logger(RoleService.name);
+
+  constructor(private readonly roleRepository: RoleRepository) {}
 
   async getAllRoles(): Promise<Role[]> {
-    return this.roles;
+    return await this.roleRepository.findAllRoles();
   }
 
   async createRole(createRoleDto: CreateRoleReqDto): Promise<Role> {
-    const newRole: Role = {
-      id: String(this.roles.length + 1),
-      name: createRoleDto.name,
-      description: createRoleDto.description,
-    };
-    this.roles.push(newRole);
-    return newRole;
+    try {
+      const role = await this.roleRepository.createRole(createRoleDto);
+      this.logger.debug('Role created:', role);
+      return role;
+    } catch (error) {
+      this.logger.error('Failed to create role:', error);
+      throw error;
+    }
   }
 
   async getRoleById(id: string): Promise<Role> {
-    return this.roles.find((role) => role.id === id);
-  }
-
-  async updateRole(id: string, updateRoleDto: UpdateRoleReqDto): Promise<Role> {
-    const role = await this.getRoleById(id);
-    if (role) {
-      Object.assign(role, updateRoleDto);
+    const role = await this.roleRepository.findRoleById(id);
+    if (!role) {
+      throw new NotFoundException(`Role with id ${id} not found`);
     }
     return role;
   }
 
+  async updateRole(id: string, updateRoleDto: UpdateRoleReqDto): Promise<Role> {
+    return await this.roleRepository.updateRole(id, updateRoleDto);
+  }
+
   async deleteRole(id: string): Promise<void> {
-    this.roles = this.roles.filter((role) => role.id !== id);
+    return await this.roleRepository.deleteRole(id);
   }
 }
