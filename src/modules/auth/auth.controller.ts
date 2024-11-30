@@ -1,38 +1,39 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 
 import { LoginReqDto } from './models/dto/req/login.req.dto';
 import { RegisterReqDto } from './models/dto/req/registe.req.dto';
-import { TokenPairResDto } from './models/dto/res/token-pair.res.dto';
+// import { JwtAuthGuard } from './models/guards/jwt-auth.guard';
 import { AuthService } from './services/auth.service';
 
 @Controller('auth')
+// @UseGuards(JwtAuthGuard)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  async register(@Body() dto: RegisterReqDto): Promise<TokenPairResDto> {
-    return await this.authService.register(dto);
+  register(@Body() dto: RegisterReqDto) {
+    return this.authService.register(dto);
   }
 
   @Post('login')
-  async login(@Body() dto: LoginReqDto): Promise<TokenPairResDto> {
-    return await this.authService.login(dto);
+  login(@Body() dto: LoginReqDto) {
+    return this.authService.login(dto);
   }
 
-  @Post('refresh-token')
-  async refreshToken(
+  @Post('refresh')
+  refresh(
     @Body('refreshToken') refreshToken: string,
-  ): Promise<TokenPairResDto> {
-    return await this.authService.refreshToken(refreshToken);
+    @Body('userId') userId: string,
+  ) {
+    return this.authService.refreshToken(userId, refreshToken);
   }
 
+  @UseGuards(JwtAuthGuard) // Защита, чтобы только аутентифицированные пользователи могли вызывать logout
   @Post('logout')
-  async logout(@Body('refreshToken') refreshToken: string): Promise<void> {
-    return await this.authService.logout(refreshToken);
-  }
-
-  @Get('me')
-  async getMe() {
-    return await this.authService.getMe();
+  async logout(@Req() req): Promise<{ message: string }> {
+    const userId = req.user.userId; // userId из JWT токена (должен быть частью payload)
+    await this.authService.logout(userId);
+    return { message: 'Вы успешно вышли' };
   }
 }

@@ -6,8 +6,10 @@ import { TokenPair } from '../models/interfaces/token-pair.interface';
 
 @Injectable()
 export class TokenService {
-  private readonly accessTokenSecret = 'ACCESS_SECRET'; // Лучше использовать process.env
-  private readonly refreshTokenSecret = 'REFRESH_SECRET';
+  private readonly accessTokenSecret =
+    process.env.JWT_ACCESS_SECRET || 'ACCESS_SECRET';
+  private readonly refreshTokenSecret =
+    process.env.JWT_REFRESH_SECRET || 'REFRESH_SECRET';
 
   generateTokens(payload: JwtPayload): TokenPair {
     const accessToken = jwt.sign(payload, this.accessTokenSecret, {
@@ -20,11 +22,11 @@ export class TokenService {
     return { accessToken, refreshToken };
   }
 
+  verifyAccessToken(token: string): JwtPayload {
+    return jwt.verify(token, this.accessTokenSecret) as JwtPayload;
+  }
+
   verifyRefreshToken(token: string): JwtPayload {
-    try {
-      return jwt.verify(token, this.refreshTokenSecret) as JwtPayload;
-    } catch (err) {
-      throw new Error('Неверный refresh токен');
-    }
+    return jwt.verify(token, this.refreshTokenSecret) as JwtPayload;
   }
 }
