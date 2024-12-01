@@ -1,84 +1,94 @@
-// import {
-//   Body,
-//   Controller,
-//   Delete,
-//   Get,
-//   Param,
-//   Patch,
-//   Post,
-// } from '@nestjs/common';
+// import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 
-// import { CreateListingReqDto } from './models/dto/req/create-listing.req.dto';
-// import { MarkForReviewReqDto } from './models/dto/req/mark-for-review.req.dto';
-// import { UpdateListingReqDto } from './models/dto/req/update-listing.req.dto';
-// import { ListingResDto } from './models/dto/res/listing.res.dto';
-// import { ListingService } from './services/listings.service';
+// import { Listing } from '../../database/entities/listing.entity';
+// import { ListingsService } from './services/listings.service';
 
 // @Controller('listings')
 // export class ListingsController {
-//   constructor(private readonly listingService: ListingService) {}
+//   constructor(private readonly listingsService: ListingsService) {}
 
-//   @Get()
-//   async getAllListings(): Promise<ListingResDto[]> {
-//     return await this.listingService.getAllListings();
-//   }
-
+//   // Метод для создания нового объявления
 //   @Post()
-//   async createListing(
-//     @Body() createListingDto: CreateListingReqDto,
-//   ): Promise<ListingResDto> {
-//     return await this.listingService.createListing(createListingDto);
+//   async create(@Body() createListingDto: any): Promise<Listing> {
+//     return await this.listingsService.createListing(createListingDto);
 //   }
 
-//   @Get(':id')
-//   async getListingById(@Param('id') id: string): Promise<ListingResDto> {
-//     return await this.listingService.getListingById(id);
+//   // Метод для получения всех объявлений
+//   @Get()
+//   async findAll(): Promise<Listing[]> {
+//     return await this.listingsService.getAllListings();
 //   }
 
-//   @Patch(':id')
-//   async updateListing(
+//   // Метод для обновления валюты объявления
+//   @Post('updateCurrency/:id')
+//   async updateCurrency(
+//     @Body() body: any,
 //     @Param('id') id: string,
-//     @Body() updateListingDto: UpdateListingReqDto,
-//   ): Promise<ListingResDto> {
-//     return await this.listingService.updateListing(id, updateListingDto);
-//   }
-
-//   @Delete(':id')
-//   async deleteListing(@Param('id') id: string): Promise<void> {
-//     return await this.listingService.deleteListing(id);
-//   }
-
-//   @Post(':id/mark-for-review')
-//   async markListingForReview(
-//     @Param('id') id: string,
-//     @Body() markForReviewDto: MarkForReviewReqDto,
-//   ): Promise<void> {
-//     return await this.listingService.markListingForReview(id, markForReviewDto);
+//   ): Promise<Listing> {
+//     return await this.listingsService.updateListingCurrency(id);
 //   }
 // }
 
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+} from '@nestjs/common';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
+import { Listing } from '../../database/entities/listing.entity';
 import { CreateListingReqDto } from './models/dto/req/create-listing.req.dto';
-import { UpdateListingReqDto } from './models/dto/req/update-listing.req.dto';
 import { ListingsService } from './services/listings.service';
 
+@ApiTags('Listings')
 @Controller('listings')
 export class ListingsController {
   constructor(private readonly listingsService: ListingsService) {}
 
   @Post()
-  createListing(@Body() dto: CreateListingReqDto) {
-    return this.listingsService.createListing(dto);
+  @HttpCode(HttpStatus.CREATED)
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'Объявление успешно создано.',
+    type: Listing,
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Ошибка валидации входных данных.',
+  })
+  async create(
+    @Body() createListingDto: CreateListingReqDto,
+  ): Promise<Listing> {
+    const userId = createListingDto.userId; // Получаем userId из DTO
+    return await this.listingsService.createListing(createListingDto, userId);
   }
 
-  @Patch(':id')
-  updateListing(@Param('id') id: string, @Body() dto: UpdateListingReqDto) {
-    return this.listingsService.updateListing(id, dto);
+  @Get()
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Список всех объявлений.',
+    type: [Listing],
+  })
+  async findAll(): Promise<Listing[]> {
+    return await this.listingsService.getAllListings();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.listingsService.findOne(id);
+  @Post('updateCurrency/:id')
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Валюта объявления обновлена.',
+    type: Listing,
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Объявление не найдено.',
+  })
+  async updateCurrency(@Param('id') id: string): Promise<Listing> {
+    return await this.listingsService.updateListingCurrency(id);
   }
 }

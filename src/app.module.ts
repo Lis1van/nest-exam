@@ -7,6 +7,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { AveragePriceModule } from './modules/average-prices/average-prices.module';
 import { CarBrandModule } from './modules/car-brands/car-brands.module';
 import { CarModelModule } from './modules/car-models/car-models.module';
+import { ExchangeRateModule } from './modules/exchange-rate/exchange-rate.module';
 import { HealthModule } from './modules/health/health.module';
 import { ListingsModule } from './modules/listings/listings.module';
 import { PermissionsModule } from './modules/permissions/permissions.module';
@@ -38,6 +39,7 @@ import { ViewsStatisticsModule } from './modules/views-statistics/views-statisti
     StatisticsModule,
     ViewsStatisticsModule,
     HealthModule,
+    ExchangeRateModule,
   ],
 })
 export class AppModule {}

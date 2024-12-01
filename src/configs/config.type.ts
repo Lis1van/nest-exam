@@ -4,6 +4,7 @@ export type ConfigType = {
   redis: RedisConfig;
   aws: AwsConfig;
   jwt: JwtConfig;
+  exchangeRate: ExchangeRate;
 };
 
 export type AppConfig = {
@@ -35,4 +36,9 @@ export type JwtConfig = {
   accessExpiresIn: string;
   refreshSecret: string;
   refreshExpiresIn: string;
+};
+
+export type ExchangeRate = {
+  apiUrl: string;
+  apiKey: string;
 };

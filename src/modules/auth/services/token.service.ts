@@ -23,10 +23,18 @@ export class TokenService {
   }
 
   verifyAccessToken(token: string): JwtPayload {
-    return jwt.verify(token, this.accessTokenSecret) as JwtPayload;
+    try {
+      return jwt.verify(token, this.accessTokenSecret) as JwtPayload;
+    } catch (error) {
+      throw new Error('Неверный access токен или срок действия истек.');
+    }
   }
 
   verifyRefreshToken(token: string): JwtPayload {
-    return jwt.verify(token, this.refreshTokenSecret) as JwtPayload;
+    try {
+      return jwt.verify(token, this.refreshTokenSecret) as JwtPayload;
+    } catch (error) {
+      throw new Error('Неверный refresh токен или срок действия истек.');
+    }
   }
 }

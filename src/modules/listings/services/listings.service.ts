@@ -1,128 +1,306 @@
 // import { Injectable } from '@nestjs/common';
+// import { InjectRepository } from '@nestjs/typeorm';
+// import { Repository } from 'typeorm';
 
-// import { CreateListingReqDto } from '../models/dto/req/create-listing.req.dto';
-// import { MarkForReviewReqDto } from '../models/dto/req/mark-for-review.req.dto';
-// import { UpdateListingReqDto } from '../models/dto/req/update-listing.req.dto';
-// import { Listing } from '../models/interfaces/listing.interface';
-// import { ProfanityFilterService } from './profanity-filter.service';
+// import { Listing } from '../../../database/entities/listing.entity';
+// import { ExchangeRateService } from '../../exchange-rate/services/exchange-rate.service'; // Импортируем сервис для получения курса валют
 
 // @Injectable()
-// export class ListingService {
-//   private listings: Listing[] = [];
+// export class ListingsService {
+//   constructor(
+//     @InjectRepository(Listing)
+//     private listingsRepository: Repository<Listing>,
+//     private exchangeRateService: ExchangeRateService, // Инжектим сервис для получения курса валют
+//   ) {}
 
-//   constructor(private readonly profanityFilter: ProfanityFilterService) {}
+//   // Метод для создания объявления с конвертацией цены
+//   async createListing(createListingDto: any): Promise<Listing> {
+//     const { price, currency } = createListingDto;
 
-//   async getAllListings(): Promise<Listing[]> {
-//     return this.listings;
-//   }
+//     // Получаем актуальные курсы для валюты
+//     const exchangeRate = await this.exchangeRateService.getLatestRates();
 
-//   async createListing(createListingDto: CreateListingReqDto): Promise<Listing> {
-//     const { title, description } = createListingDto;
-
-//     // Проверка на нецензурные слова
-//     if (
-//       this.profanityFilter.containsProfanity(title) ||
-//       this.profanityFilter.containsProfanity(description)
-//     ) {
-//       throw new Error('Объявление содержит недопустимую лексику');
+//     // Проверяем, содержит ли объект свойство rates
+//     if (!('rates' in exchangeRate)) {
+//       throw new Error('Не удалось получить актуальные курсы валют');
 //     }
 
-//     const newListing: Listing = {
-//       id: String(this.listings.length + 1),
-//       ...createListingDto,
-//       status: 'active',
-//     };
+//     // Получаем курс для заданной валюты
+//     const rate = exchangeRate.rates[currency];
+//     if (!rate) {
+//       throw new Error(`Курс для валюты ${currency} не найден`);
+//     }
 
-//     this.listings.push(newListing);
-//     return newListing;
+//     // Пересчитываем цену в оригинальной валюте
+//     const originalCurrencyRate = exchangeRate.rates['USD'];
+//     const priceInOriginalCurrency = price * (rate / originalCurrencyRate);
+
+//     // Создаем объявление
+//     const listing = this.listingsRepository.create({
+//       price,
+//       currency,
+//       originalCurrency: currency, // Устанавливаем originalCurrency
+//       exchangeRate: rate,
+//       status: 'active', // Пример статуса
+//       description: 'Description', // Пример описания
+//       priceInOriginalCurrency, // Добавляем пересчитанную цену
+//     });
+
+//     return await this.listingsRepository.save(listing);
 //   }
 
+//   // Метод для получения всех объявлений
+//   async getAllListings(): Promise<Listing[]> {
+//     return await this.listingsRepository.find();
+//   }
+
+//   // Метод для получения одного объявления
 //   async getListingById(id: string): Promise<Listing> {
-//     return this.listings.find((listing) => listing.id === id);
+//     return await this.listingsRepository.findOne({ where: { id } });
 //   }
 
-//   async updateListing(
-//     id: string,
-//     updateListingDto: UpdateListingReqDto,
-//   ): Promise<Listing> {
+//   async updateListingCurrency(id: string): Promise<Listing> {
 //     const listing = await this.getListingById(id);
-//     if (!listing) throw new Error('Объявление не найдено');
+//     if (!listing) {
+//       throw new Error('Listing not found');
+//     }
 
-//     Object.assign(listing, updateListingDto);
-//     return listing;
-//   }
+//     // Получаем актуальный курс
+//     const exchangeRate = await this.exchangeRateService.getLatestRates();
 
-//   async deleteListing(id: string): Promise<void> {
-//     this.listings = this.listings.filter((listing) => listing.id !== id);
-//   }
+//     // Проверяем, содержит ли объект свойство rates
+//     if (!('rates' in exchangeRate)) {
+//       throw new Error('Не удалось получить актуальные курсы валют');
+//     }
 
-//   async markListingForReview(
-//     id: string,
-//     markForReviewDto: MarkForReviewReqDto,
-//   ): Promise<void> {
-//     const listing = await this.getListingById(id);
-//     if (!listing) throw new Error('Объявление не найдено');
+//     // Конвертируем цену в новую валюту
+//     const rate = exchangeRate.rates[listing.currency];
+//     if (!rate) {
+//       throw new Error(`Курс для валюты ${listing.currency} не найден`);
+//     }
 
-//     // Логика обработки причины проверки (reason)
-//     console.log(
-//       `Объявление ${id} отправлено на проверку по причине: ${markForReviewDto.reason}`,
-//     );
+//     // Пересчитываем цену в валюте
+//     const priceInCurrency = listing.price * rate;
 
-//     listing.status = 'review';
+//     listing.priceInCurrency = priceInCurrency;
+//     listing.exchangeRate = rate;
+
+//     return await this.listingsRepository.save(listing);
 //   }
 // }
 
-import { Injectable, NotFoundException } from '@nestjs/common';
+// import { Injectable, Logger } from '@nestjs/common';
+// import { InjectRepository } from '@nestjs/typeorm';
+// import { Repository } from 'typeorm';
+
+// import { Listing } from '../../../database/entities/listing.entity';
+// import { ExchangeRateService } from '../../exchange-rate/services/exchange-rate.service';
+// import { CreateListingReqDto } from '../models/dto/req/create-listing.req.dto';
+
+// @Injectable()
+// export class ListingsService {
+//   private readonly logger = new Logger(ListingsService.name);
+
+//   constructor(
+//     @InjectRepository(Listing)
+//     private listingsRepository: Repository<Listing>,
+//     private exchangeRateService: ExchangeRateService,
+//   ) {}
+
+//   async createListing(createListingDto: CreateListingReqDto): Promise<Listing> {
+//     this.logger.log('Creating a new listing');
+
+//     const { price, currency, description } = createListingDto;
+
+//     this.logger.log(
+//       `Received data - Price: ${price}, Currency: ${currency}, Description: ${description}`,
+//     );
+
+//     const exchangeRate = await this.exchangeRateService.getLatestRates();
+//     if (!('rates' in exchangeRate)) {
+//       this.logger.error('Failed to retrieve the latest exchange rates');
+//       throw new Error('Не удалось получить актуальные курсы валют');
+//     }
+
+//     const rate = exchangeRate.rates[currency];
+//     if (!rate) {
+//       this.logger.error(`Exchange rate for currency ${currency} not found`);
+//       throw new Error(`Курс для валюты ${currency} не найден`);
+//     }
+
+//     const originalCurrencyRate = exchangeRate.rates['USD'];
+//     const priceInOriginalCurrency = price * (rate / originalCurrencyRate);
+
+//     const listing = this.listingsRepository.create({
+//       price,
+//       currency,
+//       originalCurrency: 'USD',
+//       exchangeRate: rate,
+//       status: 'active',
+//       description,
+//       priceInOriginalCurrency,
+//     });
+
+//     const savedListing = await this.listingsRepository.save(listing);
+//     this.logger.log(`Listing created with ID: ${savedListing.id}`);
+
+//     return savedListing;
+//   }
+
+//   async getAllListings(): Promise<Listing[]> {
+//     this.logger.log('Retrieving all listings');
+//     return await this.listingsRepository.find();
+//   }
+
+//   async getListingById(id: string): Promise<Listing> {
+//     this.logger.log(`Retrieving listing with ID: ${id}`);
+//     return await this.listingsRepository.findOne({ where: { id } });
+//   }
+
+//   async updateListingCurrency(id: string): Promise<Listing> {
+//     this.logger.log(`Updating currency for listing with ID: ${id}`);
+
+//     const listing = await this.getListingById(id);
+//     if (!listing) {
+//       this.logger.error('Listing not found');
+//       throw new Error('Listing not found');
+//     }
+
+//     const exchangeRate = await this.exchangeRateService.getLatestRates();
+//     if (!('rates' in exchangeRate)) {
+//       this.logger.error('Failed to retrieve the latest exchange rates');
+//       throw new Error('Не удалось получить актуальные курсы валют');
+//     }
+
+//     const rate = exchangeRate.rates[listing.currency];
+//     if (!rate) {
+//       this.logger.error(
+//         `Exchange rate for currency ${listing.currency} not found`,
+//       );
+//       throw new Error(`Курс для валюты ${listing.currency} не найден`);
+//     }
+
+//     const priceInCurrency = listing.price * rate;
+//     listing.priceInCurrency = priceInCurrency;
+//     listing.exchangeRate = rate;
+
+//     const updatedListing = await this.listingsRepository.save(listing);
+//     this.logger.log(`Listing with ID: ${id} updated successfully`);
+
+//     return updatedListing;
+//   }
+// }
+
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ProfanityFilterService } from 'src/modules/profanity-filter/services/profanity-filter.service';
 import { Repository } from 'typeorm';
 
 import { Listing } from '../../../database/entities/listing.entity';
+import { ExchangeRateService } from '../../exchange-rate/services/exchange-rate.service';
 import { CreateListingReqDto } from '../models/dto/req/create-listing.req.dto';
-import { UpdateListingReqDto } from '../models/dto/req/update-listing.req.dto';
 
 @Injectable()
 export class ListingsService {
+  private readonly logger = new Logger(ListingsService.name);
+
   constructor(
     @InjectRepository(Listing)
-    private readonly listingRepository: Repository<Listing>,
-    private readonly profanityFilterService: ProfanityFilterService, //Внедряем фильтр-сервис
+    private listingsRepository: Repository<Listing>,
+    private exchangeRateService: ExchangeRateService,
   ) {}
 
-  async createListing(dto: CreateListingReqDto): Promise<Listing> {
-    // Добавляем дополнительные слова в фильтр
-    this.profanityFilterService.add(['extraWord1', 'extraWord2']);
-    // Удаляем ненужные слова из фильтра
-    this.profanityFilterService.remove(['wordToRemove']);
+  // Обновленный метод createListing с учетом передачи userId
+  async createListing(
+    createListingDto: CreateListingReqDto,
+    userId: string, // Параметр userId теперь строки
+  ): Promise<Listing> {
+    this.logger.log('Creating a new listing');
 
-    // Проверяем текст на нецензурную лексику
-    this.profanityFilterService.checkProfanity(dto.description);
-    const listing = this.listingRepository.create(dto);
-    return await this.listingRepository.save(listing);
-  }
+    const { price, currency, description, brandId, modelId } = createListingDto;
 
-  async updateListing(id: string, dto: UpdateListingReqDto): Promise<Listing> {
-    const listing = await this.listingRepository.findOne({ where: { id } });
-    if (!listing) throw new NotFoundException('Listing not found');
+    this.logger.log(
+      `Received data - Price: ${price}, Currency: ${currency}, Description: ${description}, BrandId: ${brandId}, ModelId: ${modelId}`,
+    );
 
-    // Добавляем дополнительные слова в фильтр
-    this.profanityFilterService.add(['extraWord1', 'extraWord2']);
-    // Удаляем ненужные слова из фильтра
-    this.profanityFilterService.remove(['wordToRemove']);
-
-    // Проверяем текст на нецензурную лексику, если описание обновляется
-    if (dto.description) {
-      this.profanityFilterService.checkProfanity(dto.description);
+    // Получаем актуальные курсы валют
+    const exchangeRate = await this.exchangeRateService.getLatestRates();
+    if (!('rates' in exchangeRate)) {
+      this.logger.error('Failed to retrieve the latest exchange rates');
+      throw new Error('Не удалось получить актуальные курсы валют');
     }
 
-    return await this.listingRepository.save({ ...listing, ...dto });
+    const rate = exchangeRate.rates[currency];
+    if (!rate) {
+      this.logger.error(`Exchange rate for currency ${currency} not found`);
+      throw new Error(`Курс для валюты ${currency} не найден`);
+    }
+
+    const originalCurrencyRate = exchangeRate.rates['USD'];
+    const priceInOriginalCurrency = price * (rate / originalCurrencyRate);
+
+    // Создаем объявление с обязательным userId
+    const listing = this.listingsRepository.create({
+      price,
+      currency,
+      originalCurrency: 'USD',
+      exchangeRate: rate,
+      status: 'active',
+      description,
+      priceInOriginalCurrency,
+      brandId, // Добавляем brandId и modelId
+      modelId,
+      userId, // Передаем userId
+    });
+
+    const savedListing = await this.listingsRepository.save(listing);
+    this.logger.log(`Listing created with ID: ${savedListing.id}`);
+
+    return savedListing;
   }
 
-  async findOne(id: string): Promise<Listing> {
-    const listing = await this.listingRepository.findOne({
-      where: { id },
-    });
-    if (!listing) throw new NotFoundException('Listing not found');
-    return listing;
+  // Метод для получения всех объявлений
+  async getAllListings(): Promise<Listing[]> {
+    this.logger.log('Retrieving all listings');
+    return await this.listingsRepository.find();
+  }
+
+  // Метод для получения объявления по ID
+  async getListingById(id: string): Promise<Listing> {
+    this.logger.log(`Retrieving listing with ID: ${id}`);
+    return await this.listingsRepository.findOne({ where: { id } });
+  }
+
+  // Метод для обновления валюты в объявлении
+  async updateListingCurrency(id: string): Promise<Listing> {
+    this.logger.log(`Updating currency for listing with ID: ${id}`);
+
+    const listing = await this.getListingById(id);
+    if (!listing) {
+      this.logger.error('Listing not found');
+      throw new Error('Listing not found');
+    }
+
+    const exchangeRate = await this.exchangeRateService.getLatestRates();
+    if (!('rates' in exchangeRate)) {
+      this.logger.error('Failed to retrieve the latest exchange rates');
+      throw new Error('Не удалось получить актуальные курсы валют');
+    }
+
+    const rate = exchangeRate.rates[listing.currency];
+    if (!rate) {
+      this.logger.error(
+        `Exchange rate for currency ${listing.currency} not found`,
+      );
+      throw new Error(`Курс для валюты ${listing.currency} не найден`);
+    }
+
+    const priceInCurrency = listing.price * rate;
+    listing.priceInCurrency = priceInCurrency;
+    listing.exchangeRate = rate;
+
+    const updatedListing = await this.listingsRepository.save(listing);
+    this.logger.log(`Listing with ID: ${id} updated successfully`);
+
+    return updatedListing;
   }
 }

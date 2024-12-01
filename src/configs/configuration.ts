@@ -27,4 +27,8 @@ export default (): ConfigType => ({
     refreshSecret: process.env.JWT_REFRESH_SECRET || 'default_refresh_secret',
     refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
   },
+  exchangeRate: {
+    apiUrl: process.env.EXCHANGE_RATES_API_URL,
+    apiKey: process.env.EXCHANGE_RATES_API_KEY,
+  },
 });
