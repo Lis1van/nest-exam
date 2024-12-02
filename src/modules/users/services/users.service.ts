@@ -1,27 +1,49 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
-import { CreateUserDto } from '../models/dto/req/create-user.req.dto';
-import { UpdateUserDto } from '../models/dto/req/update-user.req.dto';
+import { User } from '../../../database/entities/user.entity';
+import { UpdateUserReqDto } from '../models/dto/req/update-user.req.dto';
+import { UpgradeAccountReqDto } from '../models/dto/req/upgrade-account.req.dto';
 
 @Injectable()
-export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+export class UserService {
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) {}
+
+  async getAllUsers(): Promise<User[]> {
+    return await this.userRepository.find();
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async getUserById(id: string): Promise<User> {
+    const user = await this.userRepository.findOneBy({ id });
+    if (!user) {
+      throw new NotFoundException(`User with id ${id} not found`);
+    }
+    return user;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async updateUser(id: string, updateUserDto: UpdateUserReqDto): Promise<User> {
+    const user = await this.getUserById(id);
+    const updatedUser = { ...user, ...updateUserDto };
+    return await this.userRepository.save(updatedUser);
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async upgradeAccount(
+    id: string,
+    upgradeAccountDto: UpgradeAccountReqDto,
+  ): Promise<User> {
+    const user = await this.getUserById(id);
+    user.accountType = upgradeAccountDto.accountType;
+    return await this.userRepository.save(user);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async deleteUser(id: string): Promise<void> {
+    const result = await this.userRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`User with id ${id} not found`);
+    }
   }
 }

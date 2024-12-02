@@ -1,85 +1,150 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+````markdown
+# AutoRia Clone API 1.0
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## 📋 Описание проекта
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+AutoRia Clone API — это мощное RESTful API, разработанное для управления пользователями, объявлениями о продаже автомобилей и аналитической статистикой. Этот проект направлен на создание гибкой, масштабируемой платформы, которая будет выдерживать высокие нагрузки и поддерживать постоянное развитие. API позволяет пользователям с разными ролями взаимодействовать с системой, создавать и управлять объявлениями, а также получать аналитическую информацию.
 
-## Description
+## 📦 Особенности
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- **Управление ролями и аккаунтами**: поддержка базовых и премиум-аккаунтов с различными правами доступа.
+- **Объявления**: создание, редактирование, фильтрация, управление статусами объявлений.
+- **Интеграция с валютными курсами**: автоматический пересчет стоимости автомобиля в разные валюты.
+- **Аналитика**: статистика просмотров, средние цены по регионам и Украине.
+- **AWS-совместимость**: подготовка к контейнеризации и разворачиванию на AWS.
 
-## Project setup
+## 🚀 Начало работы
+
+### 📋 Требования
+
+Для запуска проекта необходимо установить:
+
+- Node.js (рекомендуемая версия 16+ или выше)
+- npm или yarn
+- PostgreSQL
+
+### 🔧 Установка и настройка
+
+1. **Клонирование репозитория**:
+   ```bash
+   git clone <ваш-репозиторий>
+   cd <название-проекта>
+   ```
+````
+
+2. **Установка зависимостей**:
+
+   ```bash
+   npm install
+   # или
+   yarn install
+   ```
+
+3. **Конфигурация окружения**:
+   Переименуйте файл `env.txt` в `.env`:
+
+   ```bash
+   mv env.txt .env
+   ```
+
+4. **Настройка базы данных**:
+   Создайте базовые роли и таблицы:
+
+   ```sql
+   INSERT INTO roles (name) VALUES
+   ('ADMIN'),
+   ('USER'),
+   ('MODERATOR'),
+   ('BUYER');
+   ```
+
+   Дополнительно убедитесь, что база данных доступна для приложения. Параметры подключения указываются в `.env`.
+
+### 🛠 Запуск приложения
 
 ```bash
-$ npm install
+# Запуск в режиме разработки
+npm run start:dev
+
+# Запуск в режиме продакшн
+npm run start:prod
 ```
 
-## Compile and run the project
+## 📡 Проверка работоспособности
 
-```bash
-# development
-$ npm run start
+Проверить статус приложения можно через эндпоинт:
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+```http
+GET /health
 ```
 
-## Run tests
+## 📊 Функционал API
 
-```bash
-# unit tests
-$ npm run test
+### Пользователи
 
-# e2e tests
-$ npm run test:e2e
+- `POST /auth/register` — Регистрация
+- `POST /auth/login` — Вход в систему
+- `GET /users` — Получение списка пользователей (только для админов)
 
-# test coverage
-$ npm run test:cov
+### Объявления
+
+- `POST /listings` — Создание объявления (доступно только для зарегистрированных пользователей)
+- `PATCH /listings/{id}` — Обновление объявления
+- `DELETE /listings/{id}` — Удаление объявления
+- `GET /listings` — Список всех объявлений с фильтрацией по брендам, моделям, регионам.
+
+### Роли и разрешения
+
+- `GET /roles` — Получение списка ролей
+- `POST /permissions/assign-to-role` — Назначение разрешений
+
+### Бренды и модели авто
+
+- `POST /car-brands` — Добавление нового бренда
+- `GET /car-brands` — Получение списка брендов
+- `POST /car-models` — Добавление новой модели
+- `GET /car-models` — Список моделей по брендам
+
+### Статистика
+
+- `GET /statistics/summary` — Общая аналитика платформы
+- `GET /statistics/user/{userId}` — Аналитика для конкретного пользователя
+
+## 💾 Интеграция с Postman
+
+Для удобства тестирования доступна коллекция запросов Postman:
+`nest-auto_rio.postman_collection.json`. Импортируйте её в Postman для быстрого взаимодействия с API.
+
+## 💡 Особенности архитектуры
+
+1. **Роли пользователей**:
+
+   - **Покупатель**: имеет базовый доступ, может просматривать объявления.
+   - **Продавец**: создает объявления, видит ограниченные аналитические данные.
+   - **Менеджер**: управляет платформой, банит пользователей, проверяет объявления.
+   - **Администратор**: полный контроль над платформой.
+
+2. **Типы аккаунтов**:
+
+   - **Базовый**: ограниченное количество объявлений.
+   - **Премиум**: доступ к статистике просмотров, аналитике цен.
+
+3. **Валюты**:
+
+   - Учет цен в USD, EUR, UAH. Пересчет происходит по курсам ПриватБанка раз в сутки.
+
+4. **Модуль проверки объявлений**:
+
+   - Фильтрация нецензурной лексики.
+   - Ограничение на редактирование объявлений (до 3 раз).
+
+5. **Контейнеризация**:
+   - Готовность к развертыванию на AWS.
+
+## 📄 Лицензия
+
+Этот проект распространяется под лицензией MIT. Подробнее см. файл LICENSE.
+
 ```
 
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```

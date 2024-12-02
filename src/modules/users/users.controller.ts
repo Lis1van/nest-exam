@@ -1,47 +1,64 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-} from '@nestjs/common';
-import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Patch } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import { CreateUserDto } from './models/dto/req/create-user.req.dto';
-import { UpdateUserDto } from './models/dto/req/update-user.req.dto';
+import { UpdateUserReqDto } from './models/dto/req/update-user.req.dto';
+import { UpgradeAccountReqDto } from './models/dto/req/upgrade-account.req.dto';
 import { UserResDto } from './models/dto/res/user.res.dto';
-import { UsersService } from './services/users.service';
+import { UserService } from './services/users.service';
 
-@ApiTags('Пользователи') // Этот декоратор добавляет метку "Пользователи" в Swagger
+@ApiTags('Пользователи')
 @Controller('users')
-export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+export class UserController {
+  constructor(private readonly userService: UserService) {}
 
-  @Post()
-  @ApiCreatedResponse({ type: UserResDto })
-  create(@Body() dto: CreateUserDto) {
-    return this.usersService.create(dto);
-  }
-
+  @ApiOperation({
+    summary: 'Получить список всех пользователей',
+    description: 'Получить список всех пользователей',
+  })
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  async getAllUsers(): Promise<UserResDto[]> {
+    return await this.userService.getAllUsers();
   }
 
+  @ApiOperation({
+    summary: 'Получить пользователя по ID',
+    description: 'Получить пользователя по ID',
+  })
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  async getUserById(@Param('id') id: string): Promise<UserResDto> {
+    return await this.userService.getUserById(id);
   }
 
+  @ApiOperation({
+    summary: 'Обновить пользователя',
+    description: 'Обновить пользователя',
+  })
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
-    return this.usersService.update(+id, dto);
+  async updateUser(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserReqDto,
+  ): Promise<UserResDto> {
+    return await this.userService.updateUser(id, updateUserDto);
   }
 
+  @ApiOperation({
+    summary: 'Удалить пользователя',
+    description: 'Удалить пользователя',
+  })
+  @Patch(':id/upgrade')
+  async upgradeAccount(
+    @Param('id') id: string,
+    @Body() upgradeAccountDto: UpgradeAccountReqDto,
+  ): Promise<UserResDto> {
+    return await this.userService.upgradeAccount(id, upgradeAccountDto);
+  }
+
+  @ApiOperation({
+    summary: 'Удалить пользователя',
+    description: 'Удалить пользователя',
+  })
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  async deleteUser(@Param('id') id: string): Promise<void> {
+    return await this.userService.deleteUser(id);
   }
 }
