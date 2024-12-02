@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class AddAllTables1733054773197 implements MigrationInterface {
-    name = 'AddAllTables1733054773197'
+export class AddAllTables1733116135803 implements MigrationInterface {
+    name = 'AddAllTables1733116135803'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE "Модель автомобиля" ("created" TIMESTAMP NOT NULL DEFAULT now(), "updated" TIMESTAMP NOT NULL DEFAULT now(), "id" uuid NOT NULL DEFAULT uuid_generate_v4(), "brandId" uuid NOT NULL, "name" character varying(50) NOT NULL, CONSTRAINT "UQ_3a44fbe74d018c3bf3fe517587f" UNIQUE ("name"), CONSTRAINT "PK_cafe029115bdde24888be9942c5" PRIMARY KEY ("id"))`);
@@ -10,8 +10,11 @@ export class AddAllTables1733054773197 implements MigrationInterface {
         await queryRunner.query(`CREATE TABLE "Разрешение" ("created" TIMESTAMP NOT NULL DEFAULT now(), "updated" TIMESTAMP NOT NULL DEFAULT now(), "id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, CONSTRAINT "UQ_868e51401d84f98e08d24e5511a" UNIQUE ("name"), CONSTRAINT "PK_dbaba54f0ff7a33f9a9a3b1c541" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "Разрешения роли" ("created" TIMESTAMP NOT NULL DEFAULT now(), "updated" TIMESTAMP NOT NULL DEFAULT now(), "id" uuid NOT NULL DEFAULT uuid_generate_v4(), "permissionId" uuid NOT NULL, "roleId" uuid NOT NULL, CONSTRAINT "PK_214b57a98ac8bf650757a49b019" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "Роли" ("created" TIMESTAMP NOT NULL DEFAULT now(), "updated" TIMESTAMP NOT NULL DEFAULT now(), "id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "description" character varying NOT NULL, CONSTRAINT "UQ_0458e1df6025ad049e042ad9f2c" UNIQUE ("name"), CONSTRAINT "PK_63e026ea2354222f562680cd8d6" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TYPE "public"."Пользователи_accounttype_enum" AS ENUM('basic', 'premium')`);
         await queryRunner.query(`CREATE TABLE "Пользователи" ("created" TIMESTAMP NOT NULL DEFAULT now(), "updated" TIMESTAMP NOT NULL DEFAULT now(), "id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying(255) NOT NULL, "email" character varying(255) NOT NULL, "password" character varying(255) NOT NULL, "region" character varying(255), "accountType" "public"."Пользователи_accounttype_enum" NOT NULL DEFAULT 'basic', "roleId" uuid NOT NULL, CONSTRAINT "UQ_1d60459a86cce0f868b093341a7" UNIQUE ("email"), CONSTRAINT "PK_5587f2807f61974f20e80c0c065" PRIMARY KEY ("id"))`);
-        await queryRunner.query(`CREATE TABLE "Объявление" ("created" TIMESTAMP NOT NULL DEFAULT now(), "updated" TIMESTAMP NOT NULL DEFAULT now(), "id" uuid NOT NULL DEFAULT uuid_generate_v4(), "userId" uuid NOT NULL, "brandId" uuid NOT NULL, "modelId" uuid NOT NULL, "price" numeric NOT NULL, "currency" "public"."Объявление_currency_enum" NOT NULL, "originalCurrency" character varying NOT NULL, "exchangeRate" double precision, "status" "public"."Объявление_status_enum" NOT NULL, "editAttempts" integer NOT NULL DEFAULT '0', "description" text NOT NULL, "priceInOriginalCurrency" double precision, "priceInCurrency" double precision, CONSTRAINT "PK_871ca32c7f35611c455e27f2da0" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TYPE "public"."Объявление_currency_enum" AS ENUM('USD', 'EUR', 'UAH')`);
+        await queryRunner.query(`CREATE TYPE "public"."Объявление_status_enum" AS ENUM('moderation', 'active', 'rejected', 'closed')`);
+        await queryRunner.query(`CREATE TABLE "Объявление" ("created" TIMESTAMP NOT NULL DEFAULT now(), "updated" TIMESTAMP NOT NULL DEFAULT now(), "id" uuid NOT NULL DEFAULT uuid_generate_v4(), "userId" uuid NOT NULL, "brandId" uuid NOT NULL, "modelId" uuid NOT NULL, "price" numeric NOT NULL, "currency" "public"."Объявление_currency_enum" NOT NULL, "originalCurrency" character varying NOT NULL, "exchangeRate" double precision, "status" "public"."Объявление_status_enum" NOT NULL DEFAULT 'moderation', "editAttempts" integer NOT NULL DEFAULT '0', "description" text NOT NULL, "priceInCurrency" numeric, "priceInOriginalCurrency" numeric, CONSTRAINT "PK_871ca32c7f35611c455e27f2da0" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "Статистика просмотров" ("created" TIMESTAMP NOT NULL DEFAULT now(), "updated" TIMESTAMP NOT NULL DEFAULT now(), "id" uuid NOT NULL DEFAULT uuid_generate_v4(), "listingId" uuid NOT NULL, "viewsDaily" integer NOT NULL DEFAULT '0', "viewsWeekly" integer NOT NULL DEFAULT '0', "viewsMonthly" integer NOT NULL DEFAULT '0', CONSTRAINT "PK_fab6bc54017f1e413c8c800d14b" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "exchange_rate" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "currency" character varying NOT NULL, "rates" jsonb NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_5c5d27d2b900ef6cdeef0398472" PRIMARY KEY ("id"))`);
         await queryRunner.query(`ALTER TABLE "Модель автомобиля" ADD CONSTRAINT "FK_23a21f97c4ca793303d59541b46" FOREIGN KEY ("brandId") REFERENCES "Марка автомобиля"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
@@ -40,7 +43,10 @@ export class AddAllTables1733054773197 implements MigrationInterface {
         await queryRunner.query(`DROP TABLE "exchange_rate"`);
         await queryRunner.query(`DROP TABLE "Статистика просмотров"`);
         await queryRunner.query(`DROP TABLE "Объявление"`);
+        await queryRunner.query(`DROP TYPE "public"."Объявление_status_enum"`);
+        await queryRunner.query(`DROP TYPE "public"."Объявление_currency_enum"`);
         await queryRunner.query(`DROP TABLE "Пользователи"`);
+        await queryRunner.query(`DROP TYPE "public"."Пользователи_accounttype_enum"`);
         await queryRunner.query(`DROP TABLE "Роли"`);
         await queryRunner.query(`DROP TABLE "Разрешения роли"`);
         await queryRunner.query(`DROP TABLE "Разрешение"`);
