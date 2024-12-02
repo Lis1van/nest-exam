@@ -1,50 +1,49 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
-import { CreateUserReqDto } from '../models/dto/req/create-user.req.dto';
+import { User } from '../../../database/entities/user.entity';
 import { UpdateUserReqDto } from '../models/dto/req/update-user.req.dto';
 import { UpgradeAccountReqDto } from '../models/dto/req/upgrade-account.req.dto';
-import { User } from '../models/interfaces/user.interface';
 
 @Injectable()
 export class UserService {
-  private users: User[] = [];
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) {}
 
   async getAllUsers(): Promise<User[]> {
-    return this.users;
-  }
-
-  async createUser(createUserDto: CreateUserReqDto): Promise<User> {
-    const newUser: User = {
-      id: String(this.users.length + 1),
-      name: createUserDto.name,
-      email: createUserDto.email,
-      accountType: 'basic',
-    };
-    this.users.push(newUser);
-    return newUser;
+    return await this.userRepository.find();
   }
 
   async getUserById(id: string): Promise<User> {
-    return this.users.find((user) => user.id === id);
+    const user = await this.userRepository.findOneBy({ id });
+    if (!user) {
+      throw new NotFoundException(`User with id ${id} not found`);
+    }
+    return user;
   }
 
   async updateUser(id: string, updateUserDto: UpdateUserReqDto): Promise<User> {
     const user = await this.getUserById(id);
-    if (user) {
-      Object.assign(user, updateUserDto);
-    }
-    return user;
+    const updatedUser = { ...user, ...updateUserDto };
+    return await this.userRepository.save(updatedUser);
+  }
+
+  async upgradeAccount(
+    id: string,
+    upgradeAccountDto: UpgradeAccountReqDto,
+  ): Promise<User> {
+    const user = await this.getUserById(id);
+    user.accountType = upgradeAccountDto.accountType;
+    return await this.userRepository.save(user);
   }
 
   async deleteUser(id: string): Promise<void> {
-    this.users = this.users.filter((user) => user.id !== id);
-  }
-
-  async upgradeAccount(upgradeAccountDto: UpgradeAccountReqDto): Promise<User> {
-    const user = await this.getUserById(upgradeAccountDto.userId);
-    if (user) {
-      user.accountType = upgradeAccountDto.accountType;
+    const result = await this.userRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`User with id ${id} not found`);
     }
-    return user;
   }
 }

@@ -1,5 +1,3 @@
-// create-update-average-price.req.dto.ts
-
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateUpdateAveragePriceReqDto {

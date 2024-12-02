@@ -1,18 +1,3 @@
-// export class ListingResponseDto {
-//   id: string;
-//   brandId: string;
-//   modelId: string;
-//   price: number;
-//   currency: 'USD' | 'EUR' | 'UAH';
-//   description: string;
-//   status: 'active' | 'inactive' | 'moderation';
-//   editAttempts: number;
-//   exchangeRate: number;
-//   originalCurrency: string;
-//   createdAt: Date;
-//   updatedAt: Date;
-// }
-
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ListingResponseDto {

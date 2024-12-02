@@ -12,28 +12,19 @@ export class ProfanityFilterService {
     leoProfanity.add(['yourcustomword1', 'yourcustomword2']);
   }
 
-  /**
-   * Проверяет текст на наличие нецензурной лексики.
-   * @param text Текст для проверки.
-   */
-  checkProfanity(text: string): void {
+  // Проверяет текст на наличие нецензурной лексики.
+  checkProfanity(text: string): any {
     if (leoProfanity.check(text)) {
       throw new BadRequestException('Текст содержит нецензурную лексику.');
     }
   }
 
-  /**
-   * Добавляет слова в список запрещённых слов.
-   * @param words Массив слов для добавления.
-   */
+  //Добавляет слова в список запрещённых слов.
   add(words: string[]): void {
     leoProfanity.add(words);
   }
 
-  /**
-   * Удаляет слова из списка запрещённых слов.
-   * @param words Массив слов для удаления.
-   */
+  //Удаляет слова из списка запрещённых слов.
   remove(words: string[]): void {
     leoProfanity.remove(words);
   }

@@ -5,6 +5,7 @@ export type ConfigType = {
   aws: AwsConfig;
   jwt: JwtConfig;
   exchangeRate: ExchangeRate;
+  mailer: Mailer;
 };
 
 export type AppConfig = {
@@ -41,4 +42,13 @@ export type JwtConfig = {
 export type ExchangeRate = {
   apiUrl: string;
   apiKey: string;
+};
+
+export type Mailer = {
+  host: string;
+  port: number;
+  secure: boolean;
+  user: string;
+  pass: string;
+  from: string;
 };

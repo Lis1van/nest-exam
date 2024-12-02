@@ -1,7 +1,19 @@
-import { PartialType } from '@nestjs/swagger';
+import { IsInt, IsOptional, IsUUID } from 'class-validator';
 
-import { CreateViewsStatisticDto } from './create-views-statistic.req.dto';
+export class UpdateViewStatisticDto {
+  @IsUUID()
+  @IsOptional()
+  listingId?: string; // Идентификатор объявления
 
-export class UpdateViewsStatisticDto extends PartialType(
-  CreateViewsStatisticDto,
-) {}
+  @IsInt()
+  @IsOptional()
+  viewsDaily?: number; // Просмотры за день
+
+  @IsInt()
+  @IsOptional()
+  viewsWeekly?: number; // Просмотры за неделю
+
+  @IsInt()
+  @IsOptional()
+  viewsMonthly?: number; // Просмотры за месяц
+}

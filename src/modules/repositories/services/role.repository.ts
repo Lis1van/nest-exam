@@ -1,37 +1,3 @@
-// import { Injectable } from '@nestjs/common';
-// import { Repository } from 'typeorm';
-
-// import { Role } from '../../../database/entities/role.entity';
-
-// @Injectable()
-// export class RoleRepository extends Repository<Role> {
-//   async createRole(roleData: Partial<Role>): Promise<Role> {
-//     const role = this.create(roleData);
-//     return await this.save(role);
-//   }
-
-//   async findAllRoles(): Promise<Role[]> {
-//     return await this.find();
-//   }
-
-//   async findRoleById(id: string): Promise<Role> {
-//     return await this.findOne({ where: { id } });
-//   }
-
-//   async findRoleByName(name: string): Promise<Role> {
-//     return await this.findOne({ where: { name } });
-//   }
-
-//   async updateRole(id: string, roleData: Partial<Role>): Promise<Role> {
-//     await this.update(id, roleData);
-//     return await this.findRoleById(id);
-//   }
-
-//   async deleteRole(id: string): Promise<void> {
-//     await this.delete(id);
-//   }
-// }
-
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 

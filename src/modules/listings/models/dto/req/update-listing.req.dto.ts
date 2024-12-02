@@ -1,24 +1,3 @@
-// import { IsEnum, IsNumber, IsString, Min, ValidateIf } from 'class-validator';
-
-// export class UpdateListingReqDto {
-//   @ValidateIf((o) => o.description !== undefined)
-//   @IsString()
-//   description?: string;
-
-//   @ValidateIf((o) => o.price !== undefined)
-//   @IsNumber()
-//   @Min(0)
-//   price?: number;
-
-//   @ValidateIf((o) => o.currency !== undefined)
-//   @IsEnum(['USD', 'EUR', 'UAH'])
-//   currency?: 'USD' | 'EUR' | 'UAH';
-
-//   @ValidateIf((o) => o.status !== undefined)
-//   @IsEnum(['active', 'inactive', 'moderation'])
-//   status?: 'active' | 'inactive' | 'moderation';
-// }
-
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsNumber, IsString, Min, ValidateIf } from 'class-validator';
 

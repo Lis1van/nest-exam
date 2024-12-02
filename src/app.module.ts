@@ -10,13 +10,14 @@ import { CarModelModule } from './modules/car-models/car-models.module';
 import { ExchangeRateModule } from './modules/exchange-rate/exchange-rate.module';
 import { HealthModule } from './modules/health/health.module';
 import { ListingsModule } from './modules/listings/listings.module';
+import { MailerModule } from './modules/mailer/mailer.module';
 import { PermissionsModule } from './modules/permissions/permissions.module';
 import { RedisModule } from './modules/redis/redis.module';
 import { RoleModule } from './modules/roles/roles.module';
 import { StatisticsModule } from './modules/statistics/statistics.module';
 import { TypeOrmPostgresModule } from './modules/type-orm/type-orm.module';
 import { UserModule } from './modules/users/users.module';
-import { ViewsStatisticsModule } from './modules/views-statistics/views-statistics.module';
+import { ViewStatisticsModule } from './modules/views-statistics/views-statistics.module';
 
 @Module({
   imports: [
@@ -37,9 +38,10 @@ import { ViewsStatisticsModule } from './modules/views-statistics/views-statisti
     PermissionsModule,
     RoleModule,
     StatisticsModule,
-    ViewsStatisticsModule,
+    ViewStatisticsModule,
     HealthModule,
     ExchangeRateModule,
+    MailerModule,
   ],
 })
 export class AppModule {}

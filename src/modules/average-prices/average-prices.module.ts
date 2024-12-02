@@ -1,18 +1,3 @@
-// import { Module } from '@nestjs/common';
-
-// import { AveragePricesController } from './average-prices.controller';
-// import { AveragePricesService } from './services/average-prices.service';
-
-// @Module({
-//   controllers: [AveragePricesController],
-//   providers: [AveragePricesService],
-// })
-// export class AveragePricesModule {}
-
-// src/average-price/average-price.module.ts
-
-// average-price.module.ts
-
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 

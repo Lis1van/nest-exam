@@ -19,7 +19,6 @@ export class CarModelService {
   async createCarModel(dto: CreateCarModelReqDto): Promise<CarModel> {
     const { brandId, name } = dto;
 
-    // Убедись, что проверяешь существование бренда
     const brand = await this.brandRepository.findOne({
       where: { id: brandId },
     });
@@ -29,7 +28,6 @@ export class CarModelService {
 
     const carModel = this.carModelRepository.create({
       name,
-      // brandId,
       brand,
     });
 

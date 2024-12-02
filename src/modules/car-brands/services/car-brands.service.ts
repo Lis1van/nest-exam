@@ -27,7 +27,7 @@ export class CarBrandService {
       where: { id },
       relations: ['models'],
     });
-    if (!carBrand) throw new NotFoundException('Car brand not found');
+    if (!carBrand) throw new NotFoundException('Бренд не найден');
     return carBrand;
   }
 

@@ -10,6 +10,7 @@ import {
 
 import { CarBrand } from './car-brand.entity';
 import { CarModel } from './car-model.entity';
+import { ListingStatus } from './enums/listig-status.enum';
 import { TableName } from './enums/table-name.enum';
 import { CreateUpdateModel } from './models/create-update.model';
 import { User } from './user.entity';
@@ -57,12 +58,18 @@ export class Listing extends CreateUpdateModel {
   @Column({ type: 'float', nullable: true })
   exchangeRate: number; // Храним курс напрямую
 
+  // @Column({
+  //   type: 'enum',
+  //   enum: ['active', 'inactive', 'moderation'],
+  //   nullable: false,
+  // })
+  // status: 'active' | 'inactive' | 'moderation';
   @Column({
     type: 'enum',
-    enum: ['active', 'inactive', 'moderation'],
-    nullable: false,
+    enum: ListingStatus,
+    default: ListingStatus.MODERATION,
   })
-  status: 'active' | 'inactive' | 'moderation';
+  status: ListingStatus;
 
   @Column({ default: 0 })
   editAttempts: number;

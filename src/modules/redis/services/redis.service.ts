@@ -10,9 +10,6 @@ export class RedisService {
     private readonly redisClient: Redis,
   ) {}
 
-  /**
-   * Возвращает клиент Redis.
-   */
   public getClient(): Redis {
     return this.redisClient; // Возвращает экземпляр клиента Redis
   }

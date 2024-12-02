@@ -15,4 +15,7 @@ export class UserResDto {
 
   @ApiProperty({ description: 'Тип аккаунта', example: 'basic' })
   accountType: string;
+
+  @ApiProperty({ description: 'Регион', example: 'California' })
+  region: string;
 }

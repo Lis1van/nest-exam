@@ -31,4 +31,12 @@ export default (): ConfigType => ({
     apiUrl: process.env.EXCHANGE_RATES_API_URL,
     apiKey: process.env.EXCHANGE_RATES_API_KEY,
   },
+  mailer: {
+    host: process.env.MAIL_HOST,
+    port: parseInt(process.env.MAIL_PORT, 10) || 587,
+    secure: process.env.MAIL_SECURE === 'true',
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS,
+    from: process.env.MAIL_FROM,
+  },
 });

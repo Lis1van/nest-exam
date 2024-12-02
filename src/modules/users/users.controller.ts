@@ -1,19 +1,12 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 
-import { CreateUserReqDto } from './models/dto/req/create-user.req.dto';
 import { UpdateUserReqDto } from './models/dto/req/update-user.req.dto';
 import { UpgradeAccountReqDto } from './models/dto/req/upgrade-account.req.dto';
 import { UserResDto } from './models/dto/res/user.res.dto';
 import { UserService } from './services/users.service';
 
+@ApiTags('Users')
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -21,13 +14,6 @@ export class UserController {
   @Get()
   async getAllUsers(): Promise<UserResDto[]> {
     return await this.userService.getAllUsers();
-  }
-
-  @Post()
-  async createUser(
-    @Body() createUserDto: CreateUserReqDto,
-  ): Promise<UserResDto> {
-    return await this.userService.createUser(createUserDto);
   }
 
   @Get(':id')
@@ -43,15 +29,16 @@ export class UserController {
     return await this.userService.updateUser(id, updateUserDto);
   }
 
+  @Patch(':id/upgrade')
+  async upgradeAccount(
+    @Param('id') id: string,
+    @Body() upgradeAccountDto: UpgradeAccountReqDto,
+  ): Promise<UserResDto> {
+    return await this.userService.upgradeAccount(id, upgradeAccountDto);
+  }
+
   @Delete(':id')
   async deleteUser(@Param('id') id: string): Promise<void> {
     return await this.userService.deleteUser(id);
-  }
-
-  @Post('upgrade-account')
-  async upgradeAccount(
-    @Body() upgradeAccountDto: UpgradeAccountReqDto,
-  ): Promise<UserResDto> {
-    return await this.userService.upgradeAccount(upgradeAccountDto);
   }
 }
