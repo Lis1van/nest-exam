@@ -1,11 +1,17 @@
 import { Controller, Get, HttpException, HttpStatus } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { ExchangeRateService } from './services/exchange-rate.service';
 
+@ApiTags('Курс валют')
 @Controller('exchange-rate')
 export class ExchangeRateController {
   constructor(private readonly exchangeRateService: ExchangeRateService) {}
 
+  @ApiOperation({
+    summary: 'Получение курса валют',
+    description: 'Получение курса валют',
+  })
   @Get()
   async getExchangeRate() {
     try {

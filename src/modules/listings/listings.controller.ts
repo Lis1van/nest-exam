@@ -7,17 +7,21 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { Listing } from '../../database/entities/listing.entity';
 import { CreateListingReqDto } from './models/dto/req/create-listing.req.dto';
 import { ListingsService } from './services/listings.service';
 
-@ApiTags('Listings')
+@ApiTags('Объявления')
 @Controller('listings')
 export class ListingsController {
   constructor(private readonly listingsService: ListingsService) {}
 
+  @ApiOperation({
+    summary: 'Создание нового объявления',
+    description: 'Создание нового объявления',
+  })
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiResponse({
@@ -36,6 +40,10 @@ export class ListingsController {
     return await this.listingsService.createListing(createListingDto, userId);
   }
 
+  @ApiOperation({
+    summary: 'Обновление статуса объявления',
+    description: 'Обновление статуса объявления',
+  })
   @Patch('status/:id')
   @HttpCode(HttpStatus.OK)
   @ApiResponse({
